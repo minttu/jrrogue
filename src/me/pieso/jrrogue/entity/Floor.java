@@ -1,18 +1,38 @@
 package me.pieso.jrrogue.entity;
 
+import java.awt.Color;
 import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.List;
 import me.pieso.jrrogue.core.ResourceManager;
 
 public class Floor extends Entity {
 
     private Entity ent;
+    private boolean foggy;
+    private boolean seen;
+    private static Color fog = new Color(.0f, .0f, .0f, .5f);
 
     public Floor(int x, int y) {
         super(ResourceManager.getImage("floor"));
         move(x, y);
         this.ent = null;
+        this.foggy = true;
+        this.seen = false;
+    }
+
+    public boolean foggy() {
+        return foggy;
+    }
+
+    public void setFoggy(boolean bln) {
+        this.foggy = bln;
+    }
+
+    public boolean seen() {
+        return seen;
+    }
+
+    public void setSeen(boolean bln) {
+        this.seen = bln;
     }
 
     public boolean set(Entity e) {
@@ -47,8 +67,14 @@ public class Floor extends Entity {
 
     @Override
     public void draw(Graphics g, int x, int y, int side) {
+        if (!seen) {
+            return;
+        }
         super.draw(g, x, y, side);
-        if (ent != null) {
+        if (foggy) {
+            g.setColor(fog);
+            g.fillRect(x, y, side, side);
+        } else if (ent != null) {
             ent.draw(g, x, y, side);
         }
     }

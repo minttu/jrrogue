@@ -1,5 +1,7 @@
 package me.pieso.jrrogue.entity;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 import me.pieso.jrrogue.core.Game;
@@ -50,7 +52,7 @@ public abstract class Living extends Entity {
         }
         return false;
     }
-    
+
     public abstract String name();
 
     public void limit(int amount) {
@@ -81,9 +83,9 @@ public abstract class Living extends Entity {
     public int maxDmg() {
         return maxdmg;
     }
-    
+
     public int toXP() {
-        return (maxhp*maxdmg)/10;
+        return (maxhp * maxdmg) / 10;
     }
 
     public int getDamage() {
@@ -91,6 +93,18 @@ public abstract class Living extends Entity {
             return new Random().nextInt(maxdmg - mindmg) + mindmg;
         }
         return 0;
+    }
+
+    @Override
+    public void draw(Graphics g, int x, int y, int side) {
+        super.draw(g, x, y, side);
+        if (maxhp() != hp()) {
+            g.setColor(Color.BLACK);
+            g.fillRect(x + 4, y, side - 8, 4);
+            g.setColor(Color.RED);
+            int bl = (int)(((double)(side - 8.0) / (double)maxhp()) * (double)hp());
+            g.fillRect(x + 4, y + 1, bl, 2);
+        }
     }
 
     public abstract void tick(Game game);

@@ -22,8 +22,8 @@ public class Player extends Living {
         status = new ArrayList<>();
         moves = 0;
 
-        setMinDmg(2);
-        setMaxDmg(4);
+        setMinDmg(3);
+        setMaxDmg(6);
     }
 
     @Override
@@ -54,12 +54,15 @@ public class Player extends Living {
         maxxp *= 2;
         limit(level * 6);
         level++;
-        addStatus("You reached level", level+"");
+        setMinDmg((int)Math.round(minDmg()*1.5));
+        setMaxDmg((int)Math.round(maxDmg()*1.5));
+        addStatus("You reached level", level + "");
     }
 
     public String toStatus() {
         StringBuilder sb = new StringBuilder();
         sb.append("[HP ").append(hp()).append("/").append(maxhp()).append("]");
+        sb.append(" [DMG ").append(minDmg()).append("-").append(maxDmg()).append("]");
         sb.append(" [POS ").append(x()).append(",").append(y()).append("]");
         sb.append(" [XP ").append(xp).append("/").append(maxxp).append("]");
         sb.append(" [Level ").append(level).append("]");
@@ -83,16 +86,14 @@ public class Player extends Living {
     @Override
     public void tick(Game game) {
         moves++;
-        if (moves % 50 == 0) {
+        if (moves % 25 == 0) {
             heal(maxhp() / 10);
         }
     }
 
     @Override
     public void bumpedBy(Entity e) {
-        /*if (e.getClass() == Monster.class) {
-         takeDamage(((Monster) e).getDamage());
-         }*/
+
     }
 
     @Override
@@ -108,8 +109,16 @@ public class Player extends Living {
 
     @Override
     public void bumped(Entity e) {
-        if (e.getClass() == Monster.class) {
-            Monster m = (Monster) e;
+        if (e instanceof Torch) {
+            ((Torch)e).takeDamage(1, this);
+            addStatus("You broke the torch");
+            return;
+        }
+        if (e instanceof Living) {
+            if(e.equals(this)) {
+                return;
+            }
+            Living m = (Living) e;
             int dmg = getDamage();
             if (dmg == 0) {
                 addStatus("You missed the", m.name());
@@ -118,7 +127,7 @@ public class Player extends Living {
             addStatus("You hit the", m.name());
             if (m.takeDamage(dmg, this)) {
                 addXP(m.toXP());
-                addStatus("The", m.name(), "fainted");
+                addStatus("The", m.name(), "died");
             }
         }
     }

@@ -61,7 +61,7 @@ class GameArea extends JPanel implements Runnable {
         g.drawImage(ResourceManager.getImage("cdr"), getWidth() - 12, getHeight() - 12, null);
 
         if (!player.living()) {
-            g.setFont(new Font("monospace", Font.BOLD, getWidth() / 10));
+            g.setFont(new Font(Font.MONOSPACED, Font.BOLD, getWidth() / 10));
             String s = "You have died";
             
             Rectangle2D r2d = g.getFontMetrics().getStringBounds(s, g);

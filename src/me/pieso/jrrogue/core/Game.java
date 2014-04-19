@@ -10,6 +10,7 @@ import me.pieso.jrrogue.entity.Floor;
 import me.pieso.jrrogue.entity.Living;
 import me.pieso.jrrogue.entity.Monster;
 import me.pieso.jrrogue.entity.Player;
+import me.pieso.jrrogue.entity.Torch;
 import me.pieso.jrrogue.entity.Wall;
 
 public final class Game implements ActionListener {
@@ -29,6 +30,7 @@ public final class Game implements ActionListener {
         this.live = new ArrayList<>();
         makeDumb();
         spawnPlayer();
+        calculateVision();
     }
 
     public void addHook(Runnable r) {
@@ -52,7 +54,7 @@ public final class Game implements ActionListener {
                         data[y][x] = new Wall(x, y);
                     } else {
                         data[y][x] = new Floor(x, y);
-                        if(new Random().nextDouble() > 0.95) {
+                        if (new Random().nextDouble() > 0.95) {
                             Monster m = new Monster();
                             live.add(m);
                             data[y][x].set(m);
@@ -73,23 +75,111 @@ public final class Game implements ActionListener {
     public Player getPlayer() {
         return player;
     }
-    
+
     public boolean moveRandomly(Entity e) {
         int x = e.x();
         int y = e.y();
-        switch(new Random().nextInt(4)) {
+        switch (new Random().nextInt(4)) {
             case 0:
-                x++; break;
+                x++;
+                break;
             case 1:
-                x--; break;
+                x--;
+                break;
             case 2:
-                y++; break;
+                y++;
+                break;
             case 3:
-                y--; break;
+                y--;
+                break;
             default:
                 System.out.println("crap");
         }
         return move(e, e.x(), e.y(), x, y);
+    }
+
+    public void calculateVision() {
+        calculateVisionEntity(player);
+        for (Living l : live) {
+            if (l instanceof Torch) {
+                calculateVisionEntity(l);
+            }
+        }
+    }
+
+    public void calculateVisionEntity(Entity e) {
+        int mm = 4;
+        boolean over = false;
+        boolean torch = false;
+        if (e instanceof Torch) {
+            torch = true;
+            if (((Torch) e).ttl() == 1) {
+                over = true;
+            }
+        }
+        for (int y = e.y() - mm; y < e.y() + mm; y++) {
+            for (int x = e.x() - mm; x < e.x() + mm; x++) {
+                if (x >= 0 && y >= 0 && x < width && y < height) {
+                    int dis = Math.abs(x - e.x()) + Math.abs(y - e.y());
+                    if (dis < mm - 1 && !over) {
+                        data[y][x].setFoggy(false);
+                        data[y][x].setSeen(true);
+                    } else {
+                        if (torch && over) {
+                            data[y][x].setFoggy(true);
+                        } else if (!torch) {
+                            data[y][x].setFoggy(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public List<Floor> getNeighbours(Entity e) {
+        return getNeighbours(e.x(), e.y());
+    }
+
+    public List<Floor> getNeighbours(int rx, int ry) {
+        List<Floor> res = new ArrayList<>();
+        for (int y = (ry - 1); y < (ry + 2); y++) {
+            for (int x = (rx - 1); x < (rx + 2); x++) {
+                if (x >= 0 && y >= 0 && x < width && y < height) {
+                    if (rx == x && ry == y) {
+
+                    } else {
+                        res.add(data[y][x]);
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    public boolean movePlayer(int dx, int dy) {
+        boolean b = move(player, player.x(), player.y(), player.x() + dx, player.y() + dy);
+        calculateVision();
+        tick();
+        return b;
+    }
+
+    public void dropTorch(int x, int y) {
+        List<Floor> possible = getNeighbours(x, y);
+        Torch torch = new Torch();
+        while (true) {
+            int len = possible.size();
+            System.out.println(len);
+            if (len == 0) {
+                return;
+            }
+            int pos = new Random().nextInt(len);
+            if (!possible.get(pos).set(torch)) {
+                possible.remove(pos);
+            } else {
+                break;
+            }
+        }
+        live.add(torch);
     }
 
     public boolean move(Entity e, int x1, int y1, int x2, int y2) {
@@ -114,7 +204,7 @@ public final class Game implements ActionListener {
     public void tick() {
         ArrayList<Living> deletion = new ArrayList<>();
         player.tick(this);
-        if(!player.living()) {
+        if (!player.living()) {
             player.addStatus("You are dead.");
         }
         for (Living l : live) {

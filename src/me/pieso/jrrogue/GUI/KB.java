@@ -20,28 +20,33 @@ public class KB implements KeyListener {
     @Override
     public void keyPressed(KeyEvent ke) {
         Player player = game.getPlayer();
-        int x = player.x();
-        int y = player.y();
+        int x = 0;
+        int y = 0;
         if(!player.living()) {
             return;
         }
         switch (ke.getKeyCode()) {
             case KeyEvent.VK_UP:
-                game.move(player, x, y, x, y - 1);
+                y--;
                 break;
             case KeyEvent.VK_DOWN:
-                game.move(player, x, y, x, y + 1);
+                y++;
                 break;
             case KeyEvent.VK_LEFT:
-                game.move(player, x, y, x - 1, y);
+                x--;
                 break;
             case KeyEvent.VK_RIGHT:
-                game.move(player, x, y, x + 1, y);
+                x++;
+                break;
+            case KeyEvent.VK_SPACE:
+                break;
+            case KeyEvent.VK_T:
+                game.dropTorch(player.x(), player.y());
                 break;
             default:
                 return;
         }
-        game.tick();
+        game.movePlayer(x, y);
     }
 
     @Override

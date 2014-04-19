@@ -1,5 +1,7 @@
 package me.pieso.jrrogue.entity;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.util.Random;
 import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
@@ -21,7 +23,7 @@ class MonsterType {
 
 public class Monster extends Living {
 
-    private static final MonsterType[] types = {new MonsterType("morso", 10, 2, 4)};
+    private static final MonsterType[] types = {new MonsterType("morso", 10, 1, 2)};
     private final String name;
 
     public Monster() {
@@ -33,7 +35,7 @@ public class Monster extends Living {
         setMaxDmg(m.maxdmg);
         this.name = m.image;
     }
-    
+
     @Override
     public String name() {
         return name;
@@ -46,19 +48,13 @@ public class Monster extends Living {
 
     @Override
     public void bumpedBy(Entity e) {
-        /*if (e.getClass() == Player.class) {
-            int dmg = ((Player) e).getDamage();
-            System.out.println(dmg);
-            if (takeDamage(dmg)) {
-                ((Player) e).addXP(maxhp() / 3);
-            }
-        }*/
+
     }
 
     @Override
     public void bumped(Entity e) {
         if (e.getClass() == Player.class) {
-            Player p = (Player)e;
+            Player p = (Player) e;
             p.takeDamage(getDamage(), this);
         }
     }

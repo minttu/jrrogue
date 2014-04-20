@@ -1,5 +1,7 @@
 package me.pieso.jrrogue.core;
 
+import me.pieso.jrrogue.map.MapGenerator;
+import me.pieso.jrrogue.map.GenericMap;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;

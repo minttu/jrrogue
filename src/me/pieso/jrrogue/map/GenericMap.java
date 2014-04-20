@@ -1,4 +1,4 @@
-package me.pieso.jrrogue.core;
+package me.pieso.jrrogue.map;
 
 import java.awt.Rectangle;
 import java.util.Random;
@@ -213,7 +213,7 @@ public class GenericMap extends MapGenerator {
 
         placeTrap(new Ladders(0, 0));
         placePlayer();
-        placeMonsters(20);
+        placeMonsters(10);
         placeHealTraps(2);
         placeGold(10);
     }

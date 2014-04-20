@@ -9,7 +9,7 @@ import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.GameHook;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.entity.Entity;
-import me.pieso.jrrogue.entity.Player;
+import me.pieso.jrrogue.entity.living.Player;
 
 class GameArea extends JPanel implements GameHook {
 

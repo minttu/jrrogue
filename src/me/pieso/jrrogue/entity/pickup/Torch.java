@@ -1,17 +1,16 @@
-package me.pieso.jrrogue.entity;
+package me.pieso.jrrogue.entity.pickup;
 
 import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
+import me.pieso.jrrogue.entity.Entity;
 
-public class Torch extends Living {
+public class Torch extends Pickup {
 
     private int ttl;
 
     public Torch() {
-        super(ResourceManager.getImage("torch"), 1);
+        super(ResourceManager.getImage("torch"));
         this.ttl = 50;
-        setMinDmg(0);
-        setMaxDmg(0);
     }
 
     public int ttl() {

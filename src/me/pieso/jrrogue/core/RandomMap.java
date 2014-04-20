@@ -2,13 +2,18 @@ package me.pieso.jrrogue.core;
 
 import java.util.Random;
 import me.pieso.jrrogue.entity.Floor;
-import me.pieso.jrrogue.entity.Monster;
+import me.pieso.jrrogue.entity.living.Monster;
+import me.pieso.jrrogue.entity.living.Player;
 import me.pieso.jrrogue.entity.Wall;
 
 public class RandomMap extends MapGenerator {
 
     public RandomMap(int width, int height) {
         super(width, height);
+    }
+
+    public RandomMap(int width, int height, Player player) {
+        super(width, height, player);
     }
 
     @Override

@@ -9,7 +9,7 @@ public class Floor extends Entity {
     protected Entity ent;
     protected boolean foggy;
     protected boolean seen;
-    protected static Color fog = new Color(.0f, .0f, .0f, .5f);
+    public static final Color fog = new Color(.0f, .0f, .0f, .5f);
 
     public Floor(int x, int y) {
         super(ResourceManager.getImage("floor"));

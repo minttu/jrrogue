@@ -15,6 +15,7 @@ final class Status extends JTextArea implements GameHook {
         setForeground(Color.white);
         setBorder(null);
         setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        setLineWrap(true);
     }
 
     @Override

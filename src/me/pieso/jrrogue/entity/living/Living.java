@@ -1,4 +1,4 @@
-package me.pieso.jrrogue.entity;
+package me.pieso.jrrogue.entity.living;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -6,9 +6,12 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
+import me.pieso.jrrogue.entity.Entity;
 
 public abstract class Living extends Entity {
 
@@ -21,7 +24,8 @@ public abstract class Living extends Entity {
 
     private boolean dead;
     private int washealed;
-    private int washurt;
+    private List<Integer> washurt;
+    private int gold;
 
     public Living(BufferedImage image, int hp) {
         super(image);
@@ -32,7 +36,8 @@ public abstract class Living extends Entity {
         this.hitrate = 0.7;
         this.dead = false;
         this.washealed = -1;
-        this.washurt = -1;
+        this.washurt = new ArrayList<>();
+        this.gold = 0;
     }
 
     public boolean living() {
@@ -56,7 +61,7 @@ public abstract class Living extends Entity {
 
     public boolean takeDamage(int amount, Living from) {
         if (amount > 0) {
-            washurt = amount;
+            washurt.add(amount);
         }
         hp -= amount;
         if (hp < 1) {
@@ -118,13 +123,15 @@ public abstract class Living extends Entity {
         if (washealed > 0) {
             g.drawImage(ResourceManager.getImage("heal"), x, y, side, side, null);
         }
-        if (washurt > 0) {
-            int hx = x + (new Random().nextInt((side / 3) * 2));
-            int hy = y + (new Random().nextInt((side / 7) * 4)) + side / 6;
-            g.drawImage(ResourceManager.getImage("hurt"), hx, hy, side / 3, side / 3, null);
-            g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, (side / 3) - 3));
-            g.setColor(Color.WHITE);
-            g.drawString(washurt + "", hx + side / 12, hy + (side / 7) * 2);
+        if (!washurt.isEmpty()) {
+            for (Integer i : washurt) {
+                int hx = x + (new Random().nextInt((side / 3) * 2));
+                int hy = y + (new Random().nextInt((side / 7) * 4)) + side / 6;
+                g.drawImage(ResourceManager.getImage("hurt"), hx, hy, side / 3, side / 3, null);
+                g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, (side / 3) - 3));
+                g.setColor(Color.WHITE);
+                g.drawString(i + "", hx + side / 12, hy + (side / 7) * 2);
+            }
         }
         if (maxhp() != hp() || washealed > 0) {
             g.setColor(Color.BLACK);
@@ -132,10 +139,15 @@ public abstract class Living extends Entity {
             g.setColor(Color.RED);
             int bl = (int) (((double) (side - 8.0) / (double) maxhp()) * (double) hp());
             g.fillRect(x + 4, y + 1, bl, 2);
-            if (washurt > 0) {
+            if (!washurt.isEmpty()) {
+                int tot = 0;
+                for (Integer i : washurt) {
+                    tot += i;
+                }
                 g.setColor(Color.WHITE);
-                int bn = (int) (((double) (side - 8.0) / (double) maxhp()) * (double) washurt);
+                int bn = (int) (((double) (side - 8.0) / (double) maxhp()) * (double) tot);
                 g.fillRect(x + 4 + bl, y + 1, bn, 2);
+
             }
             if (washealed > 0) {
                 g.setColor(Color.GREEN);
@@ -143,10 +155,18 @@ public abstract class Living extends Entity {
                 g.fillRect(x + 4 + bl - bn, y + 1, bn, 2);
             }
         }
-        washurt = -1;
+        washurt.clear();
         washealed = -1;
     }
 
     public abstract void tick(Game game);
+
+    public void addGold(int value) {
+        this.gold += value;
+    }
+
+    public int gold() {
+        return gold;
+    }
 
 }

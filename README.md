@@ -13,7 +13,7 @@ Keys
 
 - Arrow keys and vim keys move player
 - t to drop a torch
-- space to skip a turn
+- space use whatever is under or skip a turn
 - + and - to zoom in and out
 
 ToDo

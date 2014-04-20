@@ -7,33 +7,48 @@ import java.util.List;
 import java.util.Random;
 import me.pieso.jrrogue.entity.Entity;
 import me.pieso.jrrogue.entity.Floor;
-import me.pieso.jrrogue.entity.Living;
-import me.pieso.jrrogue.entity.Player;
-import me.pieso.jrrogue.entity.Torch;
+import me.pieso.jrrogue.entity.living.Living;
+import me.pieso.jrrogue.entity.living.Monster;
+import me.pieso.jrrogue.entity.living.Player;
+import me.pieso.jrrogue.entity.pickup.Torch;
+import me.pieso.jrrogue.entity.trap.Trap;
 
 public final class Game implements ActionListener {
 
-    private final int width;
-    private final int height;
-    private final Floor[][] data;
-    private final Player player;
+    private int width;
+    private int height;
+    private Floor[][] data;
+    private Player player;
     private final List<GameHook> hooks;
-    private final List<Living> live;
+    private List<Living> live;
     private boolean vision;
     private int side;
+    private int level;
 
     public Game() {
-        this.width = 45;
-        this.height = 45;
         this.side = 32;
         this.vision = false;
-        MapGenerator mg = new GenericMap(width, height);
+        this.hooks = new ArrayList<>();
+        this.player = null;
+        this.level = 0;
+        make(45, 45);
+    }
+
+    private void make(int width, int height) {
+        level++;
+        this.width = width;
+        this.height = height;
+        MapGenerator mg;
+        if (player == null) {
+            mg = new GenericMap(width, height);
+        } else {
+            mg = new GenericMap(width, height, player);
+        }
         mg.generate();
         this.data = mg.getData();
-        this.hooks = new ArrayList<>();
         this.live = mg.getLive();
         this.player = mg.getPlayer();
-
+        player.dungeon(level);
         calculateVision();
     }
 
@@ -71,6 +86,63 @@ public final class Game implements ActionListener {
                 System.out.println("crap");
         }
         return move(e, e.x(), e.y(), x, y);
+    }
+
+    public void moveTowards(Entity e1, Entity e2) {
+        // ToDo: refactor
+        int tries = 4;
+        while (tries >= 0) {
+            int x = e1.x();
+            int y = e1.y();
+            switch (new Random().nextInt(4)) {
+                case 0:
+                case 1:
+                    if (e1.x() < e2.x()) {
+                        x++;
+                    } else if (e1.x() > e2.x()) {
+                        x--;
+                    }
+                    if (e1.x() != e2.x()) {
+                        break;
+                    }
+                case 2:
+                case 3:
+                    if (e1.y() < e2.y()) {
+                        y++;
+                    } else if (e1.y() > e2.y()) {
+                        y--;
+                    }
+                    if (e1.y() != e2.y()) {
+                        break;
+                    }
+                case 4:
+                    switch (new Random().nextInt(4)) {
+                        case 0:
+                            x++;
+                            break;
+                        case 1:
+                            x--;
+                            break;
+                        case 2:
+                            y++;
+                            break;
+                        case 3:
+                            y--;
+                            break;
+                    }
+                    break;
+            }
+            if (canMove(e1, e1.x(), e1.y(), x, y)) {
+                move(e1, e1.x(), e1.y(), x, y);
+                return;
+            } else {
+                if (data[y][x].get() != null && data[y][x].get() == e2) {
+                    move(e1, e1.x(), e1.y(), x, y);
+                    return;
+                }
+            }
+            tries--;
+        }
     }
 
     public void recalculateVision() {
@@ -147,9 +219,13 @@ public final class Game implements ActionListener {
     }
 
     public List<Floor> getNeighbours(int rx, int ry) {
+        return getNeighbours(rx, ry, 1);
+    }
+
+    public List<Floor> getNeighbours(int rx, int ry, int range) {
         List<Floor> res = new ArrayList<>();
-        for (int y = (ry - 1); y < (ry + 2); y++) {
-            for (int x = (rx - 1); x < (rx + 2); x++) {
+        for (int y = (ry - range); y < (ry + range + 1); y++) {
+            for (int x = (rx - range); x < (rx + range + 1); x++) {
                 if (x >= 0 && y >= 0 && x < width && y < height) {
                     if (data[y][x] != null) {
                         if (rx == x && ry == y) {
@@ -189,7 +265,27 @@ public final class Game implements ActionListener {
         live.add(torch);
     }
 
+    public boolean canMove(Entity e, int x1, int y1, int x2, int y2) {
+        if (Math.abs(x1 - x2) > 0 && Math.abs(y1 - y2) > 0) {
+            return false;
+        }
+        if (x1 >= 0 && x1 < width && y1 >= 0 && y1 < height
+                && x2 >= 0 && x2 < width && y2 >= 0 && y2 < height) {
+            if (data[y2][x2] == null) {
+                return false;
+            }
+            Entity en = data[y2][x2].get();
+            if (en == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean move(Entity e, int x1, int y1, int x2, int y2) {
+        if (Math.abs(x1 - x2) > 0 && Math.abs(y1 - y2) > 0) {
+            return false;
+        }
         if (x1 >= 0 && x1 < width && y1 >= 0 && y1 < height
                 && x2 >= 0 && x2 < width && y2 >= 0 && y2 < height) {
             if (data[y2][x2] == null) {
@@ -206,6 +302,7 @@ public final class Game implements ActionListener {
                 }
             } else {
                 e.bumped(en);
+                en.bumpedBy(e);
             }
         }
         return false;
@@ -214,6 +311,22 @@ public final class Game implements ActionListener {
     public void tick() {
         ArrayList<Living> deletion = new ArrayList<>();
         player.tick(this);
+        if (player.use()) {
+            Floor f = data[player.y()][player.x()];
+            if (f instanceof Trap) {
+                player.addStatus("You tried using the", ((Trap) f).name());
+                if (!((Trap) f).usedBy(player)) {
+                    player.addStatus("It did not work");
+                }
+            }
+            player.setUse(false);
+        }
+        if (player.shouldAscend()) {
+            make(width, height);
+            player.setAscend(false);
+            runHooks();
+            return;
+        }
         if (!player.living()) {
             player.addStatus("You are dead");
         }

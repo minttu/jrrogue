@@ -1,20 +1,32 @@
-package me.pieso.jrrogue.entity;
+package me.pieso.jrrogue.entity.trap;
 
+import me.pieso.jrrogue.entity.living.Player;
 import me.pieso.jrrogue.core.ResourceManager;
+import me.pieso.jrrogue.entity.Entity;
 
-public class HealTrap extends Trap {
-    
+public class HealPad extends Trap {
+
     private final int healpower;
     private int times;
-    
-    public HealTrap(int x, int y) {
+
+    public HealPad(int x, int y) {
         super(x, y, ResourceManager.getImage("healtrap"));
         this.healpower = 999;
         this.times = 1;
     }
-    
+
+    @Override
+    public String name() {
+        return "healpad";
+    }
+
     @Override
     public void steppedOnBy(Entity e) {
+
+    }
+
+    @Override
+    public boolean usedBy(Entity e) {
         if (times > 0) {
             if (e instanceof Player) {
                 Player p = (Player) e;
@@ -22,9 +34,11 @@ public class HealTrap extends Trap {
                     p.heal(healpower);
                     p.addStatus("You were fully by the HealTrap");
                     times--;
+                    return true;
                 }
             }
         }
+        return false;
     }
-    
+
 }

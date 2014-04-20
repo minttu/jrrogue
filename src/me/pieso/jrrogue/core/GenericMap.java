@@ -3,9 +3,13 @@ package me.pieso.jrrogue.core;
 import java.awt.Rectangle;
 import java.util.Random;
 import me.pieso.jrrogue.entity.Floor;
-import me.pieso.jrrogue.entity.HealTrap;
-import me.pieso.jrrogue.entity.Hole;
-import me.pieso.jrrogue.entity.Monster;
+import me.pieso.jrrogue.entity.pickup.Gold;
+import me.pieso.jrrogue.entity.trap.HealPad;
+import me.pieso.jrrogue.entity.trap.Ladders;
+import me.pieso.jrrogue.entity.living.Monster;
+import me.pieso.jrrogue.entity.pickup.Pickup;
+import me.pieso.jrrogue.entity.living.Player;
+import me.pieso.jrrogue.entity.trap.Trap;
 import me.pieso.jrrogue.entity.Wall;
 
 public class GenericMap extends MapGenerator {
@@ -15,6 +19,10 @@ public class GenericMap extends MapGenerator {
 
     public GenericMap(int width, int height) {
         super(width, height);
+    }
+
+    public GenericMap(int width, int height, Player player) {
+        super(width, height, player);
     }
 
     private void path(Rectangle rec) {
@@ -139,30 +147,42 @@ public class GenericMap extends MapGenerator {
         }
     }
 
-    private void placeHealTraps(int num) {
-        while (num > 0) {
-            Rectangle rec = recs[rnd.nextInt(3)][rnd.nextInt(3)];
-            while (true) {
-                int x = rec.x + rnd.nextInt(rec.width - 2) + 1;
-                int y = rec.y + rnd.nextInt(rec.height - 2) + 1;
-                if (data[y][x].get() == null) {
-                    data[y][x] = new HealTrap(x, y);
-                    break;
-                }
-            }
-            num--;
-        }
-    }
-
-    private void placeHole() {
+    private void placeTrap(Trap trap) {
         Rectangle rec = recs[rnd.nextInt(3)][rnd.nextInt(3)];
         while (true) {
             int x = rec.x + rnd.nextInt(rec.width - 2) + 1;
             int y = rec.y + rnd.nextInt(rec.height - 2) + 1;
             if (data[y][x].get() == null) {
-                data[y][x] = new Hole(x, y);
+                data[y][x] = trap;
+                trap.move(x, y);
                 break;
             }
+        }
+    }
+
+    private void placePickup(Pickup pickup) {
+        Rectangle rec = recs[rnd.nextInt(3)][rnd.nextInt(3)];
+        while (true) {
+            int x = rec.x + rnd.nextInt(rec.width - 2) + 1;
+            int y = rec.y + rnd.nextInt(rec.height - 2) + 1;
+            if (data[y][x].set(pickup)) {
+                live.add(pickup);
+                break;
+            }
+        }
+    }
+
+    private void placeHealTraps(int num) {
+        while (num > 0) {
+            placeTrap(new HealPad(0, 0));
+            num--;
+        }
+    }
+
+    private void placeGold(int num) {
+        while (num > 0) {
+            placePickup(new Gold());
+            num--;
         }
     }
 
@@ -191,10 +211,11 @@ public class GenericMap extends MapGenerator {
         makePath(recs[1][0], recs[2][0]);
         makePath(recs[1][2], recs[2][1]);
 
-        placeHole();
+        placeTrap(new Ladders(0, 0));
         placePlayer();
         placeMonsters(20);
         placeHealTraps(2);
+        placeGold(10);
     }
 
 }

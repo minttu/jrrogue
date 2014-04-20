@@ -1,9 +1,11 @@
-package me.pieso.jrrogue.entity;
+package me.pieso.jrrogue.entity.living;
 
 import java.util.ArrayList;
 import java.util.List;
 import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
+import me.pieso.jrrogue.entity.Entity;
+import me.pieso.jrrogue.entity.pickup.Pickup;
 
 public class Player extends Living {
 
@@ -12,6 +14,9 @@ public class Player extends Living {
     private int level;
     private final List<String> status;
     private int moves;
+    private boolean ascend;
+    private boolean use;
+    private int dungeon;
 
     public Player() {
         super(ResourceManager.getImage("player"), 16);
@@ -21,6 +26,9 @@ public class Player extends Living {
         maxxp = 20;
         status = new ArrayList<>();
         moves = 0;
+        ascend = false;
+        use = false;
+        dungeon = 0;
 
         setMinDmg(3);
         setMaxDmg(6);
@@ -61,12 +69,17 @@ public class Player extends Living {
 
     public String toStatus() {
         StringBuilder sb = new StringBuilder();
-        sb.append("[HP ").append(hp()).append("/").append(maxhp()).append("]");
-        sb.append(" [DMG ").append(minDmg()).append("-").append(maxDmg()).append("]");
-        sb.append(" [POS ").append(x()).append(",").append(y()).append("]");
-        sb.append(" [XP ").append(xp).append("/").append(maxxp).append("]");
-        sb.append(" [Level ").append(level).append("]");
-        sb.append(" [Turn ").append(moves).append("]");
+        sb.append("HP ").append(hp()).append("/").append(maxhp());
+        sb.append(" | ");
+        sb.append("DPT ").append(minDmg()).append("-").append(maxDmg());
+        sb.append(" | ");
+        sb.append("LV ").append(level);
+        sb.append(" | ");
+        sb.append("XP ").append(xp).append("/").append(maxxp);
+        sb.append(" | ");
+        sb.append("Dungeon ").append(dungeon);
+        sb.append(" | ");
+        sb.append("Gold ").append(gold());
         sb.append("\n");
         for (String s : status) {
             sb.append(s).append(" ");
@@ -86,7 +99,7 @@ public class Player extends Living {
     @Override
     public void tick(Game game) {
         moves++;
-        if (moves % 25 == 0) {
+        if (moves % 40 == 0) {
             heal(maxhp() / 10);
         }
     }
@@ -109,15 +122,11 @@ public class Player extends Living {
 
     @Override
     public void bumped(Entity e) {
-        if (e instanceof Torch) {
-            ((Torch) e).takeDamage(1, this);
-            addStatus("You broke the torch");
-            return;
+        if (e instanceof Pickup) {
+            ((Pickup) e).takeDamage(1, this);
+            addStatus("You took the", ((Pickup) e).name());
         }
-        if (e instanceof Living) {
-            if (e.equals(this)) {
-                return;
-            }
+        if (e instanceof Monster) {
             Living m = (Living) e;
             int dmg = getDamage();
             if (dmg == 0) {
@@ -127,9 +136,31 @@ public class Player extends Living {
             addStatus("You hit the", m.name());
             if (m.takeDamage(dmg, this)) {
                 addXP(m.toXP());
+                addGold(m.gold());
                 addStatus("The", m.name(), "died");
             }
         }
+    }
+
+    public void setAscend(boolean bln) {
+        ascend = bln;
+    }
+
+    public boolean shouldAscend() {
+        return ascend;
+    }
+
+    public void setUse(boolean b) {
+        use = b;
+    }
+
+    public boolean use() {
+        return use;
+    }
+
+    public void dungeon(int level) {
+        this.dungeon = level;
+        addStatus("Welcome to the", level + ".", "dungeon");
     }
 
 }

@@ -1,8 +1,13 @@
-package me.pieso.jrrogue.entity;
+package me.pieso.jrrogue.entity.living;
 
+import java.util.List;
 import java.util.Random;
 import me.pieso.jrrogue.core.Game;
+import me.pieso.jrrogue.core.NeighbourFilter;
+import me.pieso.jrrogue.core.NeighbourIterator;
 import me.pieso.jrrogue.core.ResourceManager;
+import me.pieso.jrrogue.entity.Entity;
+import me.pieso.jrrogue.entity.Floor;
 
 class MonsterType {
 
@@ -31,6 +36,7 @@ public class Monster extends Living {
         limit(m.hp);
         setMinDmg(m.mindmg);
         setMaxDmg(m.maxdmg);
+        addGold(new Random().nextInt(m.hp) + 2);
         this.name = m.image;
     }
 
@@ -41,7 +47,24 @@ public class Monster extends Living {
 
     @Override
     public void tick(Game game) {
-        game.moveRandomly(this);
+        List<Floor> plr = NeighbourIterator.filter(game.getNeighbours(x(), y(), 4), new NeighbourFilter() {
+
+            @Override
+            public boolean accept(Floor e) {
+                Entity ent = e.get();
+                if (ent != null) {
+                    if (ent instanceof Player) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+        if (plr.isEmpty()) {
+            game.moveRandomly(this);
+        } else {
+            game.moveTowards(this, plr.get(0).get());
+        }
     }
 
     @Override

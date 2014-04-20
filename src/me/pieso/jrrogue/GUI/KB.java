@@ -3,7 +3,7 @@ package me.pieso.jrrogue.GUI;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import me.pieso.jrrogue.core.Game;
-import me.pieso.jrrogue.entity.Player;
+import me.pieso.jrrogue.entity.living.Player;
 
 public class KB implements KeyListener {
 
@@ -43,6 +43,7 @@ public class KB implements KeyListener {
                 x++;
                 break;
             case KeyEvent.VK_SPACE:
+                player.setUse(true);
                 break;
             case KeyEvent.VK_T:
                 game.dropTorch(player.x(), player.y());

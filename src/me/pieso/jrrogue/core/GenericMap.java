@@ -1,7 +1,6 @@
 package me.pieso.jrrogue.core;
 
 import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
 import java.util.Random;
 import me.pieso.jrrogue.entity.Floor;
 import me.pieso.jrrogue.entity.HealTrap;

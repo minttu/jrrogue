@@ -1,8 +1,6 @@
 package me.pieso.jrrogue.entity;
 
-import java.awt.Graphics;
 import me.pieso.jrrogue.core.ResourceManager;
-import static me.pieso.jrrogue.entity.Floor.fog;
 
 public class HealTrap extends Trap {
     

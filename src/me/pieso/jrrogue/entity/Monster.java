@@ -1,7 +1,5 @@
 package me.pieso.jrrogue.entity;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.util.Random;
 import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;

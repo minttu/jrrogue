@@ -1,7 +1,5 @@
 package me.pieso.jrrogue.entity;
 
-import java.awt.image.BufferedImage;
-import javax.annotation.Resource;
 import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
 

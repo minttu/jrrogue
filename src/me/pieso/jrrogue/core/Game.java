@@ -76,13 +76,13 @@ public final class Game implements ActionListener {
     public void recalculateVision() {
         recalculateVision(false);
     }
-    
+
     public void recalculateVision(boolean seen) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (data[y][x] != null) {
                     data[y][x].setFoggy(true);
-                    if(seen) {
+                    if (seen) {
                         data[y][x].setSeen(false);
                     }
                 }

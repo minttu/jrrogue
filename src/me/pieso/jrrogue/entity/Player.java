@@ -10,7 +10,7 @@ public class Player extends Living {
     private int xp;
     private int maxxp;
     private int level;
-    private List<String> status;
+    private final List<String> status;
     private int moves;
 
     public Player() {

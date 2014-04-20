@@ -1,12 +1,8 @@
 package me.pieso.jrrogue.core;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import me.pieso.jrrogue.entity.Floor;
-import me.pieso.jrrogue.entity.Living;
 import me.pieso.jrrogue.entity.Monster;
-import me.pieso.jrrogue.entity.Player;
 import me.pieso.jrrogue.entity.Wall;
 
 public class RandomMap extends MapGenerator {

@@ -3,6 +3,11 @@ Junior Rogue
 
 A simple roguelike in Java7 and Swing. Why? To keep my Java sharp until the very scary MOOC test.
 
+Screenshot
+==========
+
+![Interface](https://juhaniimberg.github.io/jrrogue/s1.png)
+
 Keys
 ====
 

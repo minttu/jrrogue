@@ -11,6 +11,7 @@ public class Floor extends Entity {
     protected int lastLight;
     protected int lightLevel;
     protected static final int maxLight = 4;
+    private boolean hasbeenseen;
 
     public Floor(int x, int y) {
         super(ResourceManager.getImage("floor"));
@@ -40,6 +41,9 @@ public class Floor extends Entity {
     }
 
     public void setSeen(boolean bln) {
+        if (bln) {
+            this.hasbeenseen = true;
+        }
         this.seen = bln;
     }
 
@@ -95,6 +99,10 @@ public class Floor extends Entity {
     @Override
     public void bumped(Entity e) {
 
+    }
+
+    public boolean hasBeenSeen() {
+        return hasbeenseen;
     }
 
 }

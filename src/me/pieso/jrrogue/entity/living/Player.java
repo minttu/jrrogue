@@ -6,6 +6,8 @@ import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.entity.Entity;
 import me.pieso.jrrogue.entity.pickup.Pickup;
+import me.pieso.jrrogue.item.Item;
+import me.pieso.jrrogue.item.Inventory;
 
 public class Player extends Living {
 
@@ -17,6 +19,7 @@ public class Player extends Living {
     private boolean ascend;
     private boolean use;
     private int dungeon;
+    private Inventory inventory;
 
     public Player() {
         super(ResourceManager.getImage("player"), 16);
@@ -29,6 +32,8 @@ public class Player extends Living {
         ascend = false;
         use = false;
         dungeon = 0;
+        
+        inventory = new Inventory();
 
         setMinDmg(3);
         setMaxDmg(6);
@@ -37,6 +42,10 @@ public class Player extends Living {
     @Override
     public String name() {
         return "player";
+    }
+    
+    public Inventory inventory() {
+        return this.inventory;
     }
 
     public int XP() {

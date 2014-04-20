@@ -24,6 +24,16 @@ ToDo
 - Better maps
 - More monsters
 - Inventory system
+    - 3x3 grid
+    - Weapon
+    - Armor
+    - Amulet
+    - Potion 1
+    - Potion 2
+    - Potion 3
+    - Food
+    - Torch
+    - Scroll
 - A*
 
 Assets

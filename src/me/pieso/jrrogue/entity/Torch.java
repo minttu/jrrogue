@@ -6,6 +6,7 @@ import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
 
 public class Torch extends Living {
+
     private int ttl;
 
     public Torch() {
@@ -14,7 +15,7 @@ public class Torch extends Living {
         setMinDmg(0);
         setMaxDmg(0);
     }
-    
+
     public int ttl() {
         return ttl;
     }
@@ -27,19 +28,19 @@ public class Torch extends Living {
     @Override
     public void tick(Game game) {
         ttl--;
-        if(ttl == 0) {
+        if (ttl == 0) {
             this.takeDamage(1, this);
         }
     }
 
     @Override
     public void bumpedBy(Entity e) {
-        
+
     }
 
     @Override
     public void bumped(Entity e) {
-        
+
     }
 
 }

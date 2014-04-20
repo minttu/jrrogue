@@ -22,19 +22,23 @@ public class KB implements KeyListener {
         Player player = game.getPlayer();
         int x = 0;
         int y = 0;
-        if(!player.living()) {
+        if (!player.living()) {
             return;
         }
         switch (ke.getKeyCode()) {
+            case KeyEvent.VK_K:
             case KeyEvent.VK_UP:
                 y--;
                 break;
+            case KeyEvent.VK_J:
             case KeyEvent.VK_DOWN:
                 y++;
                 break;
+            case KeyEvent.VK_H:
             case KeyEvent.VK_LEFT:
                 x--;
                 break;
+            case KeyEvent.VK_L:
             case KeyEvent.VK_RIGHT:
                 x++;
                 break;
@@ -43,6 +47,12 @@ public class KB implements KeyListener {
             case KeyEvent.VK_T:
                 game.dropTorch(player.x(), player.y());
                 break;
+            case KeyEvent.VK_PLUS:
+                game.zoomup();
+                return;
+            case KeyEvent.VK_MINUS:
+                game.zoomdown();
+                return;
             default:
                 return;
         }

@@ -4,26 +4,21 @@ import java.awt.Color;
 import java.awt.Font;
 import javax.swing.JTextArea;
 import me.pieso.jrrogue.core.Game;
+import me.pieso.jrrogue.core.GameHook;
 
-final class Status extends JTextArea implements Runnable {
+final class Status extends JTextArea implements GameHook {
 
-    private final Game game;
-
-    public Status(Game game) {
+    public Status() {
         super("Status");
         setEditable(false);
         setBackground(Color.gray.darker().darker());
         setForeground(Color.white);
         setBorder(null);
         setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-
-        this.game = game;
-        game.addHook(this);
-        run();
     }
 
     @Override
-    public void run() {
+    public void hook(Game game) {
         setText(game.getPlayer().toStatus());
     }
 

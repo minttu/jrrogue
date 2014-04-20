@@ -54,8 +54,8 @@ public class Player extends Living {
         maxxp *= 2;
         limit(level * 6);
         level++;
-        setMinDmg((int)Math.round(minDmg()*1.5));
-        setMaxDmg((int)Math.round(maxDmg()*1.5));
+        setMinDmg((int) Math.round(minDmg() * 1.5));
+        setMaxDmg((int) Math.round(maxDmg() * 1.5));
         addStatus("You reached level", level + "");
     }
 
@@ -110,12 +110,12 @@ public class Player extends Living {
     @Override
     public void bumped(Entity e) {
         if (e instanceof Torch) {
-            ((Torch)e).takeDamage(1, this);
+            ((Torch) e).takeDamage(1, this);
             addStatus("You broke the torch");
             return;
         }
         if (e instanceof Living) {
-            if(e.equals(this)) {
+            if (e.equals(this)) {
                 return;
             }
             Living m = (Living) e;

@@ -8,68 +8,43 @@ import java.util.Random;
 import me.pieso.jrrogue.entity.Entity;
 import me.pieso.jrrogue.entity.Floor;
 import me.pieso.jrrogue.entity.Living;
-import me.pieso.jrrogue.entity.Monster;
 import me.pieso.jrrogue.entity.Player;
 import me.pieso.jrrogue.entity.Torch;
-import me.pieso.jrrogue.entity.Wall;
 
 public final class Game implements ActionListener {
 
     private final int width;
     private final int height;
-    private Floor[][] data;
-    private Player player;
-    private final List<Runnable> hooks;
+    private final Floor[][] data;
+    private final Player player;
+    private final List<GameHook> hooks;
     private final List<Living> live;
+    private boolean vision;
+    private int side;
 
     public Game() {
-        this.width = 30;
-        this.height = 30;
-        this.data = new Floor[height][width];
+        this.width = 45;
+        this.height = 45;
+        this.side = 32;
+        this.vision = false;
+        MapGenerator mg = new GenericMap(width, height);
+        mg.generate();
+        this.data = mg.getData();
         this.hooks = new ArrayList<>();
-        this.live = new ArrayList<>();
-        makeDumb();
-        spawnPlayer();
+        this.live = mg.getLive();
+        this.player = mg.getPlayer();
+
         calculateVision();
     }
 
-    public void addHook(Runnable r) {
+    public void addHook(GameHook r) {
         this.hooks.add(r);
     }
 
     public void runHooks() {
-        for (Runnable r : hooks) {
-            r.run();
+        for (GameHook r : hooks) {
+            r.hook(this);
         }
-    }
-
-    public void makeDumb() {
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (x == 0 || y == 0 || x == width - 1 || y == height - 1) {
-                    data[y][x] = new Wall(x, y);
-                } else if (x > 1 && x < width - 2
-                        && y > 1 && y < height - 2) {
-                    if (new Random().nextDouble() > 0.75) {
-                        data[y][x] = new Wall(x, y);
-                    } else {
-                        data[y][x] = new Floor(x, y);
-                        if (new Random().nextDouble() > 0.95) {
-                            Monster m = new Monster();
-                            live.add(m);
-                            data[y][x].set(m);
-                        }
-                    }
-                } else {
-                    data[y][x] = new Floor(x, y);
-                }
-            }
-        }
-    }
-
-    public void spawnPlayer() {
-        player = new Player();
-        data[1][1].set(player);
     }
 
     public Player getPlayer() {
@@ -98,11 +73,40 @@ public final class Game implements ActionListener {
         return move(e, e.x(), e.y(), x, y);
     }
 
+    public void recalculateVision() {
+        recalculateVision(false);
+    }
+    
+    public void recalculateVision(boolean seen) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (data[y][x] != null) {
+                    data[y][x].setFoggy(true);
+                    if(seen) {
+                        data[y][x].setSeen(false);
+                    }
+                }
+            }
+        }
+        calculateVision();
+    }
+
     public void calculateVision() {
-        calculateVisionEntity(player);
-        for (Living l : live) {
-            if (l instanceof Torch) {
-                calculateVisionEntity(l);
+        if (!vision) {
+            calculateVisionEntity(player);
+            for (Living l : live) {
+                if (l instanceof Torch) {
+                    calculateVisionEntity(l);
+                }
+            }
+        } else {
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    if (data[y][x] != null) {
+                        data[y][x].setFoggy(false);
+                        data[y][x].setSeen(true);
+                    }
+                }
             }
         }
     }
@@ -120,15 +124,17 @@ public final class Game implements ActionListener {
         for (int y = e.y() - mm; y < e.y() + mm; y++) {
             for (int x = e.x() - mm; x < e.x() + mm; x++) {
                 if (x >= 0 && y >= 0 && x < width && y < height) {
-                    int dis = Math.abs(x - e.x()) + Math.abs(y - e.y());
-                    if (dis < mm - 1 && !over) {
-                        data[y][x].setFoggy(false);
-                        data[y][x].setSeen(true);
-                    } else {
-                        if (torch && over) {
-                            data[y][x].setFoggy(true);
-                        } else if (!torch) {
-                            data[y][x].setFoggy(true);
+                    if (data[y][x] != null) {
+                        int dis = Math.abs(x - e.x()) + Math.abs(y - e.y());
+                        if (dis < mm - 1 && !over) {
+                            data[y][x].setFoggy(false);
+                            data[y][x].setSeen(true);
+                        } else {
+                            if (torch && over) {
+                                data[y][x].setFoggy(true);
+                            } else if (!torch) {
+                                data[y][x].setFoggy(true);
+                            }
                         }
                     }
                 }
@@ -145,10 +151,12 @@ public final class Game implements ActionListener {
         for (int y = (ry - 1); y < (ry + 2); y++) {
             for (int x = (rx - 1); x < (rx + 2); x++) {
                 if (x >= 0 && y >= 0 && x < width && y < height) {
-                    if (rx == x && ry == y) {
+                    if (data[y][x] != null) {
+                        if (rx == x && ry == y) {
 
-                    } else {
-                        res.add(data[y][x]);
+                        } else {
+                            res.add(data[y][x]);
+                        }
                     }
                 }
             }
@@ -168,7 +176,6 @@ public final class Game implements ActionListener {
         Torch torch = new Torch();
         while (true) {
             int len = possible.size();
-            System.out.println(len);
             if (len == 0) {
                 return;
             }
@@ -185,6 +192,9 @@ public final class Game implements ActionListener {
     public boolean move(Entity e, int x1, int y1, int x2, int y2) {
         if (x1 >= 0 && x1 < width && y1 >= 0 && y1 < height
                 && x2 >= 0 && x2 < width && y2 >= 0 && y2 < height) {
+            if (data[y2][x2] == null) {
+                return false;
+            }
             Entity en = data[y2][x2].get();
             if (en == null) {
                 if (data[y1][x1].remove(e)) {
@@ -205,7 +215,7 @@ public final class Game implements ActionListener {
         ArrayList<Living> deletion = new ArrayList<>();
         player.tick(this);
         if (!player.living()) {
-            player.addStatus("You are dead.");
+            player.addStatus("You are dead");
         }
         for (Living l : live) {
             l.tick(this);
@@ -227,5 +237,41 @@ public final class Game implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ae) {
 
+    }
+
+    public void setVision(boolean state) {
+        boolean b = false;
+        if (vision != state) {
+            b = true;
+        }
+        this.vision = state;
+        recalculateVision();
+        if (b) {
+            runHooks();
+        }
+    }
+
+    public void zoomup() {
+        side += 8;
+        zoom();
+    }
+
+    public void zoomdown() {
+        side -= 8;
+        zoom();
+    }
+
+    public void zoom() {
+        if (side < 16) {
+            side = 16;
+        }
+        if (side > 128) {
+            side = 128;
+        }
+        runHooks();
+    }
+
+    public int getSide() {
+        return side;
     }
 }

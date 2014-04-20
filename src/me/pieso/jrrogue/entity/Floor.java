@@ -6,10 +6,10 @@ import me.pieso.jrrogue.core.ResourceManager;
 
 public class Floor extends Entity {
 
-    private Entity ent;
-    private boolean foggy;
-    private boolean seen;
-    private static Color fog = new Color(.0f, .0f, .0f, .5f);
+    protected Entity ent;
+    protected boolean foggy;
+    protected boolean seen;
+    protected static Color fog = new Color(.0f, .0f, .0f, .5f);
 
     public Floor(int x, int y) {
         super(ResourceManager.getImage("floor"));

@@ -3,30 +3,31 @@ package me.pieso.jrrogue.GUI;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.MouseInfo;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JPanel;
 import me.pieso.jrrogue.core.Game;
+import me.pieso.jrrogue.core.GameHook;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.entity.Entity;
 import me.pieso.jrrogue.entity.Player;
 
-class GameArea extends JPanel implements Runnable {
+class GameArea extends JPanel implements GameHook {
 
-    private final int side;
-    private final Game game;
+    private int side;
+    private Game game;
 
-    public GameArea(Game game) {
+    public GameArea() {
         super.setBackground(Color.WHITE);
-        this.side = 32;
-        this.game = game;
-        game.addHook(this);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        side = game.getSide();
 
         g.setColor(Color.gray.darker().darker());
         g.fillRect(0, 0, getWidth(), getHeight());
@@ -38,12 +39,19 @@ class GameArea extends JPanel implements Runnable {
 
         for (int y = 0; y < data.length; y++) {
             for (int x = 0; x < data[0].length; x++) {
-                if ((x - 1) * side + side + mx > getWidth()) {
-                    break;
+                // If we have gone too far
+                if (data[y][x] != null) {
+                    if (x * side + mx > getWidth()) {
+                        break;
+                    }
+                    // are we there yet?
+                    if ((x + 1) * side + mx > 0 && (y + 1) * side + my > 0) {
+                        data[y][x].draw(g, mx + x * side, my + y * side, side);
+                    }
                 }
-                data[y][x].draw(g, mx + x * side, my + y * side, side);
             }
-            if (y * side + side + my > getHeight()) {
+            // If we have gone too far
+            if ((y + 1) * side + my > getHeight()) {
                 break;
             }
         }
@@ -61,23 +69,30 @@ class GameArea extends JPanel implements Runnable {
         g.drawImage(ResourceManager.getImage("cdr"), getWidth() - 12, getHeight() - 12, null);
 
         if (!player.living()) {
-            g.setFont(new Font(Font.MONOSPACED, Font.BOLD, getWidth() / 10));
+            g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, getWidth() / 10));
             String s = "You have died";
-            
+
             Rectangle2D r2d = g.getFontMetrics().getStringBounds(s, g);
-            
+
             g.setColor(Color.BLACK);
-            g.drawString(s, getWidth() / 2 - (int) r2d.getWidth() / 2 + 4,
-                    getHeight() / 2 + (int) r2d.getHeight() / 3 + 4);
-            
-            g.setColor(Color.RED.darker());
+            g.drawString(s, getWidth() / 2 - (int) r2d.getWidth() / 2 + 1,
+                    getHeight() / 2 + (int) r2d.getHeight() / 3 + 1);
+            g.drawString(s, getWidth() / 2 - (int) r2d.getWidth() / 2 - 1,
+                    getHeight() / 2 + (int) r2d.getHeight() / 3 + 1);
+            g.drawString(s, getWidth() / 2 - (int) r2d.getWidth() / 2 - 1,
+                    getHeight() / 2 + (int) r2d.getHeight() / 3 - 1);
+            g.drawString(s, getWidth() / 2 - (int) r2d.getWidth() / 2 + 1,
+                    getHeight() / 2 + (int) r2d.getHeight() / 3 - 1);
+
+            g.setColor(Color.WHITE);
             g.drawString(s, getWidth() / 2 - (int) r2d.getWidth() / 2,
                     getHeight() / 2 + (int) r2d.getHeight() / 3);
         }
     }
 
     @Override
-    public void run() {
+    public void hook(Game game) {
+        this.game = game;
         repaint();
     }
 }

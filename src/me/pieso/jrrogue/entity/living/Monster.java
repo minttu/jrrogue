@@ -38,6 +38,7 @@ public class Monster extends Living {
         setMaxDmg(m.maxdmg);
         addGold(new Random().nextInt(m.hp) + 2);
         this.name = m.image;
+        setSolid(true);
     }
 
     @Override

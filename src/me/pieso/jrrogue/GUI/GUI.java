@@ -113,7 +113,7 @@ public class GUI implements Runnable {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
-                game.recalculateVision(true);
+                game.resetVision();
                 game.runHooks();
             }
 

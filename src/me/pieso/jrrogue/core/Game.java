@@ -10,7 +10,6 @@ import java.util.Random;
 import me.pieso.jrrogue.entity.Entity;
 import me.pieso.jrrogue.entity.Floor;
 import me.pieso.jrrogue.entity.living.Living;
-import me.pieso.jrrogue.entity.living.Monster;
 import me.pieso.jrrogue.entity.living.Player;
 import me.pieso.jrrogue.entity.pickup.Torch;
 import me.pieso.jrrogue.entity.trap.Trap;
@@ -26,6 +25,7 @@ public final class Game implements ActionListener {
     private boolean vision;
     private int side;
     private int level;
+    private int frame;
 
     public Game() {
         this.side = 32;
@@ -34,6 +34,7 @@ public final class Game implements ActionListener {
         this.player = null;
         this.level = 0;
         make(45, 45);
+        this.frame = 0;
     }
 
     private void make(int width, int height) {
@@ -147,26 +148,20 @@ public final class Game implements ActionListener {
         }
     }
 
-    public void recalculateVision() {
-        recalculateVision(false);
-    }
-
-    public void recalculateVision(boolean seen) {
+    public void resetVision() {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (data[y][x] != null) {
-                    data[y][x].setFoggy(true);
-                    if (seen) {
-                        data[y][x].setSeen(false);
-                    }
+                    data[y][x].setSeen(false);
+                    data[y][x].setLight(frame, 0);
                 }
             }
         }
-        calculateVision();
     }
 
     public void calculateVision() {
         if (!vision) {
+            resetVision();
             calculateVisionEntity(player);
             for (Living l : live) {
                 if (l instanceof Torch) {
@@ -177,7 +172,7 @@ public final class Game implements ActionListener {
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
                     if (data[y][x] != null) {
-                        data[y][x].setFoggy(false);
+                        data[y][x].setLight(frame, 4);
                         data[y][x].setSeen(true);
                     }
                 }
@@ -186,29 +181,15 @@ public final class Game implements ActionListener {
     }
 
     public void calculateVisionEntity(Entity e) {
-        int mm = 4;
-        boolean over = false;
-        boolean torch = false;
-        if (e instanceof Torch) {
-            torch = true;
-            if (((Torch) e).ttl() == 1) {
-                over = true;
-            }
-        }
+        int mm = 5;
         for (int y = e.y() - mm; y < e.y() + mm; y++) {
             for (int x = e.x() - mm; x < e.x() + mm; x++) {
                 if (x >= 0 && y >= 0 && x < width && y < height) {
                     if (data[y][x] != null) {
                         int dis = Math.abs(x - e.x()) + Math.abs(y - e.y());
-                        if (dis < mm - 1 && !over) {
-                            data[y][x].setFoggy(false);
+                        if (dis < mm && los(e.x(), e.y(), x, y)) {
                             data[y][x].setSeen(true);
-                        } else {
-                            if (torch && over) {
-                                data[y][x].setFoggy(true);
-                            } else if (!torch) {
-                                data[y][x].setFoggy(true);
-                            }
+                            data[y][x].setLight(frame, mm - dis);
                         }
                     }
                 }
@@ -244,7 +225,6 @@ public final class Game implements ActionListener {
 
     public boolean movePlayer(int dx, int dy) {
         boolean b = move(player, player.x(), player.y(), player.x() + dx, player.y() + dy);
-        calculateVision();
         tick();
         return b;
     }
@@ -311,6 +291,7 @@ public final class Game implements ActionListener {
     }
 
     public void tick() {
+        frame++;
         ArrayList<Living> deletion = new ArrayList<>();
         player.tick(this);
         if (player.use()) {
@@ -342,6 +323,7 @@ public final class Game implements ActionListener {
             data[l.y()][l.x()].remove(l);
             live.remove(l);
         }
+        calculateVision();
         runHooks();
     }
 
@@ -360,7 +342,7 @@ public final class Game implements ActionListener {
             b = true;
         }
         this.vision = state;
-        recalculateVision();
+        Game.this.resetVision();
         if (b) {
             runHooks();
         }
@@ -388,5 +370,53 @@ public final class Game implements ActionListener {
 
     public int getSide() {
         return side;
+    }
+
+    /* 
+     * Taken from http://www.roguebasin.com/index.php?title=Simple_Line_of_Sight
+     */
+    public boolean los(int x1, int y1, int x2, int y2) {
+        if (x1 == x2 && y1 == y2) {
+            return true;
+        }
+        int t, x, y, ax, ay, sx, sy, dx, dy;
+        dx = x1 - x2;
+        dy = y1 - y2;
+        ax = Math.abs(dx) * 2;
+        ay = Math.abs(dy) * 2;
+        sx = (dx < 0 ? -1 : 1);
+        sy = (dy < 0 ? -1 : 1);
+        x = x2;
+        y = y2;
+        if (ax > ay) {
+            t = ay - (ax / 2);
+            do {
+                if (t >= 0) {
+                    y += sy;
+                    t -= ax;
+                }
+                x += sx;
+                t += ay;
+                if (x == x1 && y == y1) {
+                    return true;
+                }
+            } while (data[y][x] != null && !data[y][x].solid());
+            return false;
+        } else {
+            t = ax - (ay / 2);
+            do {
+                if (t >= 0) {
+                    x += sx;
+                    t -= ay;
+                }
+                y += sy;
+                t += ax;
+                if (x == x1 && y == y1) {
+                    return true;
+                }
+            } while (data[y][x] != null && !data[y][x].solid());
+        }
+
+        return false;
     }
 }

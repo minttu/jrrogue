@@ -7,24 +7,32 @@ import me.pieso.jrrogue.core.ResourceManager;
 public class Floor extends Entity {
 
     protected Entity ent;
-    protected boolean foggy;
     protected boolean seen;
-    public static final Color fog = new Color(.0f, .0f, .0f, .5f);
+    protected int lastLight;
+    protected int lightLevel;
+    protected static final int maxLight = 4;
 
     public Floor(int x, int y) {
         super(ResourceManager.getImage("floor"));
         move(x, y);
         this.ent = null;
-        this.foggy = true;
+        this.lightLevel = 0;
+        this.lastLight = 0;
         this.seen = false;
     }
 
-    public boolean foggy() {
-        return foggy;
+    public int lightLevel() {
+        return lightLevel;
     }
 
-    public void setFoggy(boolean bln) {
-        this.foggy = bln;
+    public void setLight(int frame, int i) {
+        if (frame != lastLight) {
+            lastLight = frame;
+            lightLevel = 0;
+        }
+        if (i > lightLevel) {
+            lightLevel = Math.min(maxLight, i);
+        }
     }
 
     public boolean seen() {
@@ -71,12 +79,12 @@ public class Floor extends Entity {
             return;
         }
         super.draw(g, x, y, side);
-        if (foggy) {
-            g.setColor(fog);
-            g.fillRect(x, y, side, side);
-        } else if (ent != null) {
+        if (ent != null) {
             ent.draw(g, x, y, side);
         }
+        lightLevel = Math.min(maxLight, lightLevel);
+        g.setColor(new Color(0f, 0f, 0f, 1f - (float) ((float) lightLevel / (float) maxLight)));
+        g.fillRect(x, y, side, side);
     }
 
     @Override

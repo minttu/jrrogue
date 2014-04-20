@@ -26,7 +26,7 @@ class GameArea extends JPanel implements GameHook {
 
         side = game.getSide();
 
-        g.setColor(Color.gray.darker().darker());
+        g.setColor(Color.black);
         g.fillRect(0, 0, getWidth(), getHeight());
         Entity[][] data = game.getData();
         Player player = game.getPlayer();

@@ -21,11 +21,10 @@ Keys
 ToDo
 ====
 
-- Fix lighting bugs
-- Actual maps
+- Better maps
+- More monsters
 - Inventory system
 - A*
-- Actual AI
 
 Assets
 ======

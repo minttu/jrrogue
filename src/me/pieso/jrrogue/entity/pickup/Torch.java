@@ -10,7 +10,7 @@ public class Torch extends Pickup {
 
     public Torch() {
         super(ResourceManager.getImage("torch"));
-        this.ttl = 50;
+        this.ttl = 99999;
     }
 
     public int ttl() {

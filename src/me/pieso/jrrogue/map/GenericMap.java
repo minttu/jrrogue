@@ -2,15 +2,16 @@ package me.pieso.jrrogue.map;
 
 import java.awt.Rectangle;
 import java.util.Random;
+import me.pieso.jrrogue.entity.Door;
 import me.pieso.jrrogue.entity.Floor;
+import me.pieso.jrrogue.entity.Wall;
+import me.pieso.jrrogue.entity.living.Monster;
+import me.pieso.jrrogue.entity.living.Player;
 import me.pieso.jrrogue.entity.pickup.Gold;
+import me.pieso.jrrogue.entity.pickup.Pickup;
 import me.pieso.jrrogue.entity.trap.HealPad;
 import me.pieso.jrrogue.entity.trap.Ladders;
-import me.pieso.jrrogue.entity.living.Monster;
-import me.pieso.jrrogue.entity.pickup.Pickup;
-import me.pieso.jrrogue.entity.living.Player;
 import me.pieso.jrrogue.entity.trap.Trap;
-import me.pieso.jrrogue.entity.Wall;
 
 public class GenericMap extends MapGenerator {
 
@@ -38,7 +39,11 @@ public class GenericMap extends MapGenerator {
             if (sy < height - 1 && data[sy + 1][x] == null) {
                 data[sy + 1][x] = new Wall(x, sy + 1);
             }
-            data[sy][x] = new Floor(x, sy);
+            if (data[sy][x] instanceof Wall) {
+                data[sy][x] = new Door(x, sy, false);
+            } else {
+                data[sy][x] = new Floor(x, sy);
+            }
             if (x == (sx + ex) / 2) {
                 for (int y = sy; y <= ey; y++) {
                     if (ex > 0 && data[y][ex - 1] == null) {
@@ -47,7 +52,11 @@ public class GenericMap extends MapGenerator {
                     if (ex < width - 1 && data[y][ex + 1] == null) {
                         data[y][ex + 1] = new Wall(ex + 1, y);
                     }
-                    data[y][ex] = new Floor(ex, y);
+                    if (data[y][ex] instanceof Wall) {
+                        data[y][ex] = new Door(ex, y, true);
+                    } else {
+                        data[y][ex] = new Floor(ex, y);
+                    }
                 }
             }
         }

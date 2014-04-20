@@ -19,3 +19,13 @@ ToDo
 - Inventory system
 - A*
 - Actual AI
+
+Assets
+======
+
+- All done in mtpaint and tweaked with ImageMagick
+
+License
+=======
+
+MIT, see LICENSE.

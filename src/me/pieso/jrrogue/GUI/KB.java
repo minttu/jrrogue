@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.entity.living.Player;
+import me.pieso.jrrogue.item.Inventory;
 
 public class KB implements KeyListener {
 
@@ -25,6 +26,7 @@ public class KB implements KeyListener {
         if (!player.living()) {
             return;
         }
+        out:
         switch (ke.getKeyCode()) {
             case KeyEvent.VK_K:
             case KeyEvent.VK_UP:
@@ -45,9 +47,9 @@ public class KB implements KeyListener {
             case KeyEvent.VK_SPACE:
                 player.setUse(true);
                 break;
-            case KeyEvent.VK_T:
-                game.dropTorch(player.x(), player.y());
-                break;
+            /*case KeyEvent.VK_T:
+             game.dropTorch(player.x(), player.y());
+             break;*/
             case KeyEvent.VK_PLUS:
                 game.zoomup();
                 return;
@@ -55,6 +57,13 @@ public class KB implements KeyListener {
                 game.zoomdown();
                 return;
             default:
+                for (int c = 0; c < Inventory.letters.length; c++) {
+                    char cc = Inventory.letters[c];
+                    if (ke.getKeyChar() == cc) {
+                        player.inventory().remove(c, 1);
+                        break out;
+                    }
+                }
                 return;
         }
         game.movePlayer(x, y);

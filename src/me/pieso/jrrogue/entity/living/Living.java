@@ -24,8 +24,7 @@ public abstract class Living extends Entity {
 
     private boolean dead;
     private int washealed;
-    private List<Integer> washurt;
-    private int gold;
+    private final List<Integer> washurt;
 
     public Living(BufferedImage image, int hp) {
         super(image);
@@ -37,7 +36,6 @@ public abstract class Living extends Entity {
         this.dead = false;
         this.washealed = -1;
         this.washurt = new ArrayList<>();
-        this.gold = 0;
     }
 
     public boolean living() {
@@ -107,8 +105,14 @@ public abstract class Living extends Entity {
     }
 
     public int getDamage() {
+        if (maxdmg < 1) {
+            return 0;
+        }
         if (new Random().nextDouble() < hitrate) {
-            return new Random().nextInt(maxdmg - mindmg) + mindmg;
+            if (maxdmg - mindmg > 1) {
+                return new Random().nextInt(maxdmg - mindmg) + mindmg;
+            }
+            return mindmg;
         }
         return 0;
     }
@@ -160,13 +164,5 @@ public abstract class Living extends Entity {
     }
 
     public abstract void tick(Game game);
-
-    public void addGold(int value) {
-        this.gold += value;
-    }
-
-    public int gold() {
-        return gold;
-    }
 
 }

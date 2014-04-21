@@ -14,10 +14,12 @@ class MonsterType {
     public final int hp;
     public final int mindmg;
     public final int maxdmg;
+    public final String name;
     public final String image;
 
-    public MonsterType(String image, int hp, int dmg1, int dmg2) {
+    public MonsterType(String name, String image, int hp, int dmg1, int dmg2) {
         this.image = image;
+        this.name = name;
         this.hp = hp;
         this.mindmg = dmg1;
         this.maxdmg = dmg2;
@@ -26,18 +28,20 @@ class MonsterType {
 
 public class Monster extends Living {
 
-    private static final MonsterType[] types = {new MonsterType("morso", 10, 1, 2)};
+    private static final MonsterType[] types = {
+        new MonsterType("bat", "b", 4, 1, 2),
+        new MonsterType("goblin", "g", 7, 2, 4),
+        new MonsterType("mursu", "m", 12, 1, 1)};
     private final String name;
 
     public Monster() {
         super(ResourceManager.getImage("undefined"), 0);
         MonsterType m = types[new Random().nextInt(types.length)];
-        setImage(ResourceManager.getImage(m.image));
+        setImage(ResourceManager.getImage("monster/" + m.image));
         limit(m.hp);
         setMinDmg(m.mindmg);
         setMaxDmg(m.maxdmg);
-        addGold(new Random().nextInt(m.hp) + 2);
-        this.name = m.image;
+        this.name = m.name;
         setSolid(true);
     }
 

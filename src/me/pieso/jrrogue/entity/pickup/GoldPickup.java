@@ -6,18 +6,15 @@ import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.entity.Entity;
 
-public class Gold extends Pickup {
+public class GoldPickup extends Pickup {
 
-    public Gold() {
+    public GoldPickup() {
         super(ResourceManager.getImage("gold"));
-        addGold(new Random().nextInt(30) + 10);
     }
 
     @Override
     public void bumpedBy(Entity e) {
-        if (e instanceof Living) {
-            ((Living) e).addGold(gold());
-        }
+
     }
 
     @Override

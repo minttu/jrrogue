@@ -7,8 +7,9 @@ import me.pieso.jrrogue.entity.Floor;
 import me.pieso.jrrogue.entity.Wall;
 import me.pieso.jrrogue.entity.living.Monster;
 import me.pieso.jrrogue.entity.living.Player;
-import me.pieso.jrrogue.entity.pickup.Gold;
+import me.pieso.jrrogue.entity.pickup.GoldPickup;
 import me.pieso.jrrogue.entity.pickup.Pickup;
+import me.pieso.jrrogue.entity.pickup.SwordPickup;
 import me.pieso.jrrogue.entity.trap.HealPad;
 import me.pieso.jrrogue.entity.trap.Ladders;
 import me.pieso.jrrogue.entity.trap.Trap;
@@ -190,7 +191,7 @@ public class GenericMap extends MapGenerator {
 
     private void placeGold(int num) {
         while (num > 0) {
-            placePickup(new Gold());
+            placePickup(new GoldPickup());
             num--;
         }
     }
@@ -225,6 +226,7 @@ public class GenericMap extends MapGenerator {
         placeMonsters(10);
         placeHealTraps(2);
         placeGold(10);
+        placePickup(new SwordPickup());
     }
 
 }

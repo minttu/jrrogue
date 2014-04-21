@@ -6,8 +6,12 @@ import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.entity.Entity;
 import me.pieso.jrrogue.entity.pickup.Pickup;
-import me.pieso.jrrogue.item.Item;
+import me.pieso.jrrogue.item.FoodItem;
+import me.pieso.jrrogue.item.GoldItem;
 import me.pieso.jrrogue.item.Inventory;
+import me.pieso.jrrogue.item.Item;
+import me.pieso.jrrogue.item.SwordItem;
+import me.pieso.jrrogue.item.TorchItem;
 
 public class Player extends Living {
 
@@ -20,6 +24,7 @@ public class Player extends Living {
     private boolean use;
     private int dungeon;
     private Inventory inventory;
+    private double hunger;
 
     public Player() {
         super(ResourceManager.getImage("player"), 16);
@@ -32,18 +37,23 @@ public class Player extends Living {
         ascend = false;
         use = false;
         dungeon = 0;
-        
-        inventory = new Inventory();
+        hunger = 0;
 
-        setMinDmg(3);
-        setMaxDmg(6);
+        inventory = new Inventory();
+        inventory.add(new SwordItem());
+        inventory.add(new TorchItem(6));
+        inventory.add(new GoldItem(0));
+        inventory.add(new FoodItem(2));
+
+        setMinDmg(0);
+        setMaxDmg(0);
     }
 
     @Override
     public String name() {
         return "player";
     }
-    
+
     public Inventory inventory() {
         return this.inventory;
     }
@@ -87,8 +97,6 @@ public class Player extends Living {
         sb.append("XP ").append(xp).append("/").append(maxxp);
         sb.append(" | ");
         sb.append("Dungeon ").append(dungeon);
-        sb.append(" | ");
-        sb.append("Gold ").append(gold());
         sb.append("\n");
         for (String s : status) {
             sb.append(s).append(" ");
@@ -107,10 +115,28 @@ public class Player extends Living {
 
     @Override
     public void tick(Game game) {
+        inventory.checkUnloads(game);
+        SwordItem sword = (SwordItem) inventory.findClass(SwordItem.class);
+        if (sword != null) {
+            setMaxDmg(sword.maxDmg());
+            setMinDmg(sword.minDmg());
+        }
         moves++;
         if (moves % 40 == 0) {
             heal(maxhp() / 10);
         }
+        hunger += 0.0025;
+        if (hunger >= 1) {
+            addStatus("You died from hunger");
+            takeDamage(hp(), null);
+        } else if (hunger > 0.95) {
+            addStatus("You are extremely hungry");
+            addStatus("You should consider eating");
+            takeDamage(1, null);
+        } else if (hunger > 0.8) {
+            addStatus("You are really hungry");
+        }
+
     }
 
     @Override
@@ -121,10 +147,20 @@ public class Player extends Living {
     @Override
     public boolean takeDamage(int amount, Living from) {
         boolean b = super.takeDamage(amount, from);
-        if (amount > 0) {
-            addStatus("Took damage from the", from.name());
-        } else {
-            addStatus("The", from.name(), "missed you");
+        if (from != null) {
+            if (amount > 0) {
+                addStatus("Took damage from the", from.name());
+            } else {
+                addStatus("The", from.name(), "missed you");
+            }
+            if (hp() < 1) {
+                addStatus("It was fatal");
+            }
+        }
+        if (hp() < 1) {
+            addStatus("You are dead");
+            addStatus("Game over");
+            addStatus("Goodbye");
         }
         return b;
     }
@@ -134,6 +170,10 @@ public class Player extends Living {
         if (e instanceof Pickup) {
             ((Pickup) e).takeDamage(1, this);
             addStatus("You took the", ((Pickup) e).name());
+            Item i = inventory.findLinked(((Pickup) e).getClass());
+            if (i != null) {
+                i.add(1);
+            }
         }
         if (e instanceof Monster) {
             Living m = (Living) e;
@@ -145,7 +185,6 @@ public class Player extends Living {
             addStatus("You hit the", m.name());
             if (m.takeDamage(dmg, this)) {
                 addXP(m.toXP());
-                addGold(m.gold());
                 addStatus("The", m.name(), "died");
             }
         }

@@ -11,7 +11,7 @@ import me.pieso.jrrogue.entity.Entity;
 import me.pieso.jrrogue.entity.Floor;
 import me.pieso.jrrogue.entity.living.Living;
 import me.pieso.jrrogue.entity.living.Player;
-import me.pieso.jrrogue.entity.pickup.Torch;
+import me.pieso.jrrogue.entity.pickup.TorchPickup;
 import me.pieso.jrrogue.entity.trap.Trap;
 
 public final class Game implements ActionListener {
@@ -67,6 +67,10 @@ public final class Game implements ActionListener {
 
     public Player getPlayer() {
         return player;
+    }
+    
+    public void addLiving(Living l) {
+        this.live.add(l);
     }
 
     public boolean moveRandomly(Entity e) {
@@ -164,7 +168,7 @@ public final class Game implements ActionListener {
             resetVision();
             calculateVisionEntity(player);
             for (Living l : live) {
-                if (l instanceof Torch) {
+                if (l instanceof TorchPickup) {
                     calculateVisionEntity(l);
                 }
             }
@@ -231,7 +235,7 @@ public final class Game implements ActionListener {
 
     public void dropTorch(int x, int y) {
         List<Floor> possible = getNeighbours(x, y);
-        Torch torch = new Torch();
+        TorchPickup torch = new TorchPickup();
         while (true) {
             int len = possible.size();
             if (len == 0) {
@@ -309,9 +313,6 @@ public final class Game implements ActionListener {
             player.setAscend(false);
             runHooks();
             return;
-        }
-        if (!player.living()) {
-            player.addStatus("You are dead");
         }
         for (Living l : live) {
             l.tick(this);

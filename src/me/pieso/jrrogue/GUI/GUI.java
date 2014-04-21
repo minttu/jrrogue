@@ -31,7 +31,7 @@ public class GUI implements Runnable {
     @Override
     public void run() {
         main = new JFrame("Junior Rogue");
-        main.setPreferredSize(new Dimension(15 * 32, 15 * 32));
+        main.setPreferredSize(new Dimension(20 * 32, 20 * 32));
         main.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         JPanel pane = new JPanel(new BorderLayout());
         createMainComponents(pane);

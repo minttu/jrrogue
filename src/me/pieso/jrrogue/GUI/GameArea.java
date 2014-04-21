@@ -3,10 +3,12 @@ package me.pieso.jrrogue.GUI;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JPanel;
 import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.GameHook;
+import me.pieso.jrrogue.core.JRGraphics;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.entity.Floor;
 import me.pieso.jrrogue.entity.living.Monster;
@@ -101,40 +103,19 @@ class GameArea extends JPanel implements GameHook {
                 }
             }
         }
-        int per2 = per * data.length;
-        int per3 = (per2 - 4) / 3;
-        g.setColor(new Color(1f, 1f, 1f, .5f));
-        g.drawRect(getWidth() - per2 - 11, 12, per2, per2);
-        g.drawRect(getWidth() - per2 - 10, 13, per2 - 2, per2 - 2);
-        g.setColor(new Color(1f, 1f, 1f, .25f));
-        g.fillRect(getWidth() - per2 - 9, 14, per2 - 2, per2 - 2);
 
-        g.setColor(new Color(0f, 0f, 0f, .5f));
-        for (int y = 0; y < 3; y++) {
-            for (int x = 0; x < 3; x++) {
-                g.fillRect(getWidth() - per2 - 7 + x * per3, 16 + y * per3, per3 - 1, per3 - 1);
-            }
-        }
+        int invside = 32 * 3 + 7;
+        player.inventory().draw(g, new Rectangle(getWidth() - 12 - invside, 11, invside, invside));
 
         if (!player.living()) {
-            g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, getWidth() / 10));
-            String s = "You have died";
+            g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, getWidth() / 16));
+            String s = "You have died. Game over.";
 
             Rectangle2D r2d = g.getFontMetrics().getStringBounds(s, g);
+            Rectangle drec = new Rectangle(getWidth() / 2 - (int) r2d.getWidth() / 2,
+                    getHeight() / 2 + (int) r2d.getHeight() / 3, 0, 0);
 
-            g.setColor(Color.BLACK);
-            g.drawString(s, getWidth() / 2 - (int) r2d.getWidth() / 2 + 1,
-                    getHeight() / 2 + (int) r2d.getHeight() / 3 + 1);
-            g.drawString(s, getWidth() / 2 - (int) r2d.getWidth() / 2 - 1,
-                    getHeight() / 2 + (int) r2d.getHeight() / 3 + 1);
-            g.drawString(s, getWidth() / 2 - (int) r2d.getWidth() / 2 - 1,
-                    getHeight() / 2 + (int) r2d.getHeight() / 3 - 1);
-            g.drawString(s, getWidth() / 2 - (int) r2d.getWidth() / 2 + 1,
-                    getHeight() / 2 + (int) r2d.getHeight() / 3 - 1);
-
-            g.setColor(Color.WHITE);
-            g.drawString(s, getWidth() / 2 - (int) r2d.getWidth() / 2,
-                    getHeight() / 2 + (int) r2d.getHeight() / 3);
+            JRGraphics.drawTextOutlined(g, drec, s, Color.RED, Color.BLACK);
         }
     }
 

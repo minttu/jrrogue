@@ -10,7 +10,7 @@ public class HealPad extends Trap {
     private int times;
 
     public HealPad(int x, int y) {
-        super(x, y, ResourceManager.getImage("healtrap"));
+        super(x, y, ResourceManager.getImage("healpad"));
         this.healpower = 999;
         this.times = 1;
     }
@@ -34,6 +34,9 @@ public class HealPad extends Trap {
                     p.heal(healpower);
                     p.addStatus("You were fully by the HealTrap");
                     times--;
+                    if (times == 0) {
+                        setImage(ResourceManager.getImage("trap"));
+                    }
                     return true;
                 }
             }

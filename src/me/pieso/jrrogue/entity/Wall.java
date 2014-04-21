@@ -1,7 +1,7 @@
 package me.pieso.jrrogue.entity;
 
 import me.pieso.jrrogue.core.ResourceManager;
-import me.pieso.jrrogue.entity.pickup.Torch;
+import me.pieso.jrrogue.entity.pickup.TorchPickup;
 
 public class Wall extends Floor {
 
@@ -28,7 +28,7 @@ public class Wall extends Floor {
 
     @Override
     public boolean set(Entity e) {
-        if (e instanceof Torch) {
+        if (e instanceof TorchPickup) { // hardcode that baby!
             return super.set(e);
         }
         return false;

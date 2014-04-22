@@ -6,7 +6,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import me.pieso.jrrogue.core.Game;
-import me.pieso.jrrogue.core.JRGraphics;
+import me.pieso.jrrogue.util.GraphicsUtils;
 import me.pieso.jrrogue.core.ResourceManager;
 
 public class Inventory {
@@ -121,7 +121,7 @@ public class Inventory {
 
             items.get(i).draw(g, nrec);
             g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-            JRGraphics.drawTextOutlined(g,
+            GraphicsUtils.drawTextOutlined(g,
                     new Rectangle(nrec.x + 1, nrec.y + 10, 0, 0),
                     "" + letters[i], Color.WHITE, Color.BLACK);
         }

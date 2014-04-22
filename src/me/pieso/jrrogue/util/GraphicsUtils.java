@@ -1,10 +1,10 @@
-package me.pieso.jrrogue.core;
+package me.pieso.jrrogue.util;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-public class JRGraphics  {
+public class GraphicsUtils  {
     
     public static void drawTextOutlined(Graphics g, Rectangle rec, String s, Color fg, Color bg) {
         g.setColor(bg);

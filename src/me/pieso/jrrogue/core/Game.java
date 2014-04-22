@@ -1,7 +1,5 @@
 package me.pieso.jrrogue.core;
 
-import me.pieso.jrrogue.map.MapGenerator;
-import me.pieso.jrrogue.map.GenericMap;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -13,6 +11,11 @@ import me.pieso.jrrogue.entity.living.Living;
 import me.pieso.jrrogue.entity.living.Player;
 import me.pieso.jrrogue.entity.pickup.TorchPickup;
 import me.pieso.jrrogue.entity.trap.Trap;
+import me.pieso.jrrogue.map.BSPMap;
+import me.pieso.jrrogue.map.CellularMap;
+import me.pieso.jrrogue.map.GenericMap;
+import me.pieso.jrrogue.map.MapGenerator;
+import me.pieso.jrrogue.util.GameHook;
 
 public final class Game implements ActionListener {
 
@@ -33,7 +36,7 @@ public final class Game implements ActionListener {
         this.hooks = new ArrayList<>();
         this.player = null;
         this.level = 0;
-        make(45, 45);
+        make(100, 100);
         this.frame = 0;
     }
 
@@ -43,9 +46,9 @@ public final class Game implements ActionListener {
         this.height = height;
         MapGenerator mg;
         if (player == null) {
-            mg = new GenericMap(width, height);
+            mg = new CellularMap(width, height, new Player());
         } else {
-            mg = new GenericMap(width, height, player);
+            mg = new CellularMap(width, height, player);
         }
         mg.generate();
         this.data = mg.getData();
@@ -68,7 +71,7 @@ public final class Game implements ActionListener {
     public Player getPlayer() {
         return player;
     }
-    
+
     public void addLiving(Living l) {
         this.live.add(l);
     }
@@ -156,8 +159,13 @@ public final class Game implements ActionListener {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (data[y][x] != null) {
-                    data[y][x].setSeen(false);
-                    data[y][x].setLight(frame, 0);
+                    if (vision == false) {
+                        data[y][x].setSeen(false);
+                        data[y][x].setLight(frame, 0);
+                    } else {
+                        data[y][x].setSeen(true);
+                        data[y][x].setLight(frame, 8);
+                    }
                 }
             }
         }
@@ -343,7 +351,7 @@ public final class Game implements ActionListener {
             b = true;
         }
         this.vision = state;
-        Game.this.resetVision();
+        resetVision();
         if (b) {
             runHooks();
         }

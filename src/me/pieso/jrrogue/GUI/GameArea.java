@@ -7,14 +7,14 @@ import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JPanel;
 import me.pieso.jrrogue.core.Game;
-import me.pieso.jrrogue.core.GameHook;
-import me.pieso.jrrogue.core.JRGraphics;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.entity.Floor;
 import me.pieso.jrrogue.entity.living.Monster;
 import me.pieso.jrrogue.entity.living.Player;
 import me.pieso.jrrogue.entity.pickup.Pickup;
 import me.pieso.jrrogue.entity.trap.Trap;
+import me.pieso.jrrogue.util.GameHook;
+import me.pieso.jrrogue.util.GraphicsUtils;
 
 class GameArea extends JPanel implements GameHook {
 
@@ -72,11 +72,11 @@ class GameArea extends JPanel implements GameHook {
 
         // minimap
         int per = getWidth() / 4 / data.length;
-        g.setColor(new Color(1f, 1f, 1f, .5f));
-        g.drawRect(12, 12, data[0].length * per, data.length * per);
-        g.drawRect(13, 13, data[0].length * per - 2, data.length * per - 2);
+        /*g.setColor(new Color(1f, 1f, 1f, .5f));
+        g.drawRect(12, 12, (data[0].length + 1) * per - 1, data.length * per);
+        g.drawRect(13, 13, (data[0].length + 1) * per - 3, data.length * per - 2);
         g.setColor(new Color(1f, 1f, 1f, .25f));
-        g.fillRect(14, 14, data[0].length * per - 2, data[0].length * per - 2);
+        g.fillRect(14, 14, (data[0].length + 1) * per - 3, data[0].length * per - 2);*/
         for (int y = 0; y < data.length; y++) {
             for (int x = 0; x < data[y].length; x++) {
                 if (data[y][x] != null) {
@@ -115,7 +115,7 @@ class GameArea extends JPanel implements GameHook {
             Rectangle drec = new Rectangle(getWidth() / 2 - (int) r2d.getWidth() / 2,
                     getHeight() / 2 + (int) r2d.getHeight() / 3, 0, 0);
 
-            JRGraphics.drawTextOutlined(g, drec, s, Color.RED, Color.BLACK);
+            GraphicsUtils.drawTextOutlined(g, drec, s, Color.RED, Color.BLACK);
         }
     }
 

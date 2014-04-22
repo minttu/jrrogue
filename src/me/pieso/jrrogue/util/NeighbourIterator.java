@@ -1,4 +1,4 @@
-package me.pieso.jrrogue.core;
+package me.pieso.jrrogue.util;
 
 import java.util.ArrayList;
 import java.util.List;

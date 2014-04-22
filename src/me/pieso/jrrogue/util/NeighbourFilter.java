@@ -1,4 +1,4 @@
-package me.pieso.jrrogue.core;
+package me.pieso.jrrogue.util;
 
 import me.pieso.jrrogue.entity.Floor;
 

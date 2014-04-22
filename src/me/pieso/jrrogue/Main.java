@@ -1,8 +1,8 @@
 package me.pieso.jrrogue;
 
-import me.pieso.jrrogue.GUI.GUI;
 import java.io.IOException;
 import javax.swing.SwingUtilities;
+import me.pieso.jrrogue.GUI.GUI;
 
 public class Main {
 

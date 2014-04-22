@@ -8,10 +8,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.pieso.jrrogue.core.Game;
-import me.pieso.jrrogue.core.JRGraphics;
+import me.pieso.jrrogue.util.GraphicsUtils;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.entity.Floor;
 import me.pieso.jrrogue.entity.pickup.Pickup;
@@ -37,11 +35,11 @@ public abstract class Item {
     public Item(String name, BufferedImage img) {
         this(name, img, 0);
     }
-    
+
     public BufferedImage image() {
         return img;
     }
-    
+
     public void setImage(BufferedImage img) {
         this.img = img;
     }
@@ -128,7 +126,7 @@ public abstract class Item {
             String s = amount + "";
             Rectangle2D r2d = g.getFontMetrics().getStringBounds(s, g);
             g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-            JRGraphics.drawTextOutlined(g,
+            GraphicsUtils.drawTextOutlined(g,
                     new Rectangle((int) (rec.x + rec.width - r2d.getWidth() - 2), rec.y + rec.height - 2, 0, 0),
                     s, Color.white, Color.black);
         }

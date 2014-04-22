@@ -125,7 +125,7 @@ public class Player extends Living {
         if (moves % 40 == 0) {
             heal(maxhp() / 10);
         }
-        hunger += 0.0025;
+        hunger += 0.0005;
         if (hunger >= 1) {
             addStatus("You died from hunger");
             takeDamage(hp(), null);

@@ -1,4 +1,6 @@
-package me.pieso.jrrogue.core;
+package me.pieso.jrrogue.util;
+
+import me.pieso.jrrogue.core.Game;
 
 public interface GameHook {
 

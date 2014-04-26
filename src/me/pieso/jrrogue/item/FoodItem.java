@@ -5,6 +5,6 @@ import me.pieso.jrrogue.core.ResourceManager;
 public class FoodItem extends Item {
 
     public FoodItem(int amount) {
-        super("Food", ResourceManager.getImage("food"), amount);
+        super("food", ResourceManager.getImage("food"), amount);
     }
 }

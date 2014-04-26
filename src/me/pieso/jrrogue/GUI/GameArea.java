@@ -83,7 +83,7 @@ class GameArea extends JPanel implements GameHook {
         g.drawImage(ResourceManager.getImage("cdr"), getWidth() - 12, getHeight() - 12, null);
 
         // minimap
-        int per = getWidth() / 4 / data.length;
+        int per = Math.max(1, getWidth() / 4 / data.length);
         /*g.setColor(new Color(1f, 1f, 1f, .5f));
          g.drawRect(12, 12, (data[0].length + 1) * per - 1, data.length * per);
          g.drawRect(13, 13, (data[0].length + 1) * per - 3, data.length * per - 2);

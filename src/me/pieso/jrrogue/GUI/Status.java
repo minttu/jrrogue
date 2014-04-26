@@ -31,19 +31,19 @@ final class Status extends JTextArea implements GameHook {
         String[] statusb = game.getPlayer().toStatus().split("\n");
         StringBuilder sb = new StringBuilder();
         int cur = 0;
-        for (int st = 0; st < statusb.length; st++) {
-            if (statusb[st].contains("\r")) {
-                sb.append(statusb[st]).append("\n");
+        for (String statusb1 : statusb) {
+            if (statusb1.contains("\r")) {
+                sb.append(statusb1).append("\n");
             } else {
-                cur += statusb[st].length();
+                cur += statusb1.length();
                 if (cur > getWidth() / getColumnWidth()) {
                     cur = 0;
                     sb.append("\n");
                 }
-                if (cur == 0 && statusb[st].charAt(0) == ' ') {
-                    sb.append(statusb[st].substring(1));
+                if (cur == 0 && statusb1.charAt(0) == ' ') {
+                    sb.append(statusb1.substring(1));
                 } else {
-                    sb.append(statusb[st]);
+                    sb.append(statusb1);
                 }
             }
         }

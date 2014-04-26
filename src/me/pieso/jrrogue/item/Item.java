@@ -84,6 +84,16 @@ public abstract class Item {
                 }
             }
             game.addLiving(pick);
+            boolean an = false;
+            String st = (name().charAt(0) + "").toLowerCase();
+            String ats[] = {"a", "e", "i", "o", "u", "y"};
+            for (String s : ats) {
+                if (s.equals(st)) {
+                    an = true;
+                    break;
+                }
+            }
+            game.getPlayer().addStatus("You dropped a" + (an ? "n" : ""), name());
         }
     }
 

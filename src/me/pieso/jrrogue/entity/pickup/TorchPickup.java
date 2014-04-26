@@ -19,7 +19,7 @@ public class TorchPickup extends Pickup {
 
     @Override
     public String name() {
-        return "torch";
+        return "a torch";
     }
 
     @Override

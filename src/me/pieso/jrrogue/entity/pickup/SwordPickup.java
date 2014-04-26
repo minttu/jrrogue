@@ -13,7 +13,7 @@ public class SwordPickup extends Pickup {
 
     @Override
     public String name() {
-        return "sword";
+        return "a sword upgrade";
     }
 
     @Override

@@ -2,6 +2,7 @@ package me.pieso.jrrogue.entity.living;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.entity.Entity;
@@ -108,7 +109,9 @@ public class Player extends Living {
     public void addStatus(String... sss) {
         String ss = "";
         for (int i = 0; i < sss.length; i++) {
-            ss += sss[i] + (i == sss.length - 1 ? ".\n" : " ");
+            if (sss[i].length() > 0) {
+                ss += sss[i] + (i == sss.length - 1 ? ".\n" : " ");
+            }
         }
         status.add(ss);
     }
@@ -152,18 +155,16 @@ public class Player extends Living {
         boolean b = super.takeDamage(amount, from);
         if (from != null) {
             if (amount > 0) {
-                addStatus("Took damage from the", from.name());
+                addStatus("The", from.name(), dhit[new Random().nextInt(dhit.length)], "you");
             } else {
-                addStatus("The", from.name(), "missed you");
+                addStatus("The", from.name(), dmiss[new Random().nextInt(dmiss.length)], "missed you");
             }
-            if (hp() < 1) {
-                addStatus("It was fatal");
-            }
+            /*if (hp() < 1) {
+             addStatus("It was fatal");
+             }*/
         }
         if (b && hp() < 1) {
-            addStatus("You are dead");
-            addStatus("Game over");
-            addStatus("Goodbye");
+            addStatus("You are dead, game over");
         }
         return b;
     }
@@ -172,7 +173,7 @@ public class Player extends Living {
     public void bumped(Entity e) {
         if (e instanceof Pickup) {
             ((Pickup) e).takeDamage(1, this);
-            addStatus("You took the", ((Pickup) e).name());
+            addStatus("You picked up", ((Pickup) e).name());
             Item i = inventory.findLinked(((Pickup) e).getClass());
             if (i != null) {
                 i.add(1);
@@ -182,13 +183,13 @@ public class Player extends Living {
             Living m = (Living) e;
             int dmg = getDamage();
             if (dmg == 0) {
-                addStatus("You missed the", m.name());
+                addStatus("You", dmiss[new Random().nextInt(dmiss.length)], "missed the", m.name());
                 return;
             }
-            addStatus("You hit the", m.name());
+            addStatus("You", dhit[new Random().nextInt(dhit.length)], "the", m.name());
             if (m.takeDamage(dmg, this)) {
                 addXP(m.toXP());
-                addStatus("The", m.name(), "died");
+                addStatus("The", m.name(), dmesg[new Random().nextInt(dmesg.length)]);
             }
         }
     }

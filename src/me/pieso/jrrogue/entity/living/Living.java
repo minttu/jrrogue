@@ -26,6 +26,13 @@ public abstract class Living extends Entity {
     private int washealed;
     private final List<Integer> washurt;
 
+    public final String[] dmesg = new String[]{"died", "fainted",
+        "could not take it anymore", "is long gone", "wont be missed",
+        "disappeared", "will be missed", "is sleeping with the fishes",
+        "went missing"};
+    public final String[] dmiss = new String[]{"", "", "barely", "slightly"};
+    public final String[] dhit = new String[]{"hit", "smacked", "damaged"};
+
     public Living(BufferedImage image, int hp) {
         super(image);
         this.hp = hp;

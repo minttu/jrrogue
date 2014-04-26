@@ -24,7 +24,7 @@ public class GoldPickup extends Pickup {
 
     @Override
     public String name() {
-        return "gold coin";
+        return "a gold coin";
     }
 
     @Override

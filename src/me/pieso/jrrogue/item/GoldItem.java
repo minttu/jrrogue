@@ -6,7 +6,7 @@ import me.pieso.jrrogue.entity.pickup.GoldPickup;
 public class GoldItem extends Item {
 
     public GoldItem(int amount) {
-        super("gold coin", ResourceManager.getImage("golditem"), amount);
+        super("a gold coin", ResourceManager.getImage("golditem"), amount);
         linkPickup(GoldPickup.class);
     }
 }

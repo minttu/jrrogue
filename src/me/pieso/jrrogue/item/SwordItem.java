@@ -10,7 +10,7 @@ public class SwordItem extends Item {
     private final BufferedImage og;
 
     public SwordItem() {
-        super("sword", ResourceManager.getImage("sword"), 1);
+        super("your sword", ResourceManager.getImage("sword"), 1);
         og = ResourceManager.getImage("sword");
         showAmount = false;
         linkPickup(SwordPickup.class);

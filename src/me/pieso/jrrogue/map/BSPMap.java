@@ -11,14 +11,14 @@ import me.pieso.jrrogue.entity.living.Player;
 import me.pieso.jrrogue.util.BSP;
 
 public class BSPMap extends MapGenerator {
-    
+
     private final List<Rectangle> rooms;
-    
+
     public BSPMap(int width, int height, Player player) {
         super(width, height, player);
         rooms = new ArrayList<>();
     }
-    
+
     private void rawroom(Rectangle rec) {
         for (int y = rec.y; y < rec.y + rec.height; y++) {
             for (int x = rec.x; x < rec.x + rec.width; x++) {
@@ -32,19 +32,19 @@ public class BSPMap extends MapGenerator {
             }
         }
     }
-    
+
     private void room(Rectangle rec) {
         Rectangle nw = new Rectangle(rec);
-        
+
         nw.width = new Random().nextInt(rec.width - 6) + 6;
         nw.height = new Random().nextInt(rec.height - 6) + 6;
-        
+
         nw.x = rec.x + (rec.width - nw.width) / 2;
         nw.y = rec.y + (rec.height - nw.height) / 2;
         rooms.add(nw);
         rawroom(nw);
     }
-    
+
     private void rawpath(Rectangle rec) {
         boolean hori = rec.width < rec.height;
         int doors = 0;
@@ -64,7 +64,7 @@ public class BSPMap extends MapGenerator {
             }
         }
     }
-    
+
     private void path(BSP bsp) {
         Rectangle rec = new Rectangle();
         if (bsp.whatSplit() == BSP.HSPLIT) {
@@ -80,7 +80,7 @@ public class BSPMap extends MapGenerator {
         }
         rawpath(rec);
     }
-    
+
     @Override
     public void generate() {
         BSP root = new BSP(0, 0, width, height);
@@ -100,11 +100,11 @@ public class BSPMap extends MapGenerator {
                 con.add(cur);
             }
         }
-        
+
         for (BSP b : fin) {
             room(b.rectangle());
         }
-        
+
         while (!con.isEmpty()) {
             path(con.remove(con.size() - 1));
         }
@@ -147,5 +147,5 @@ public class BSPMap extends MapGenerator {
             }
         }
     }
-    
+
 }

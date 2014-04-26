@@ -31,7 +31,6 @@ public class SwordItem extends Item {
 
     public void updatelook() {
         Color tint = null;
-        System.out.println(amount());
         switch (amount()) {
             case 1:
                 tint = new Color(0.7f, 0.7f, 0.7f);

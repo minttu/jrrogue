@@ -1,20 +1,19 @@
 package me.pieso.jrrogue.map;
 
-import java.awt.Rectangle;
-import java.util.Random;
 import me.pieso.jrrogue.entity.Floor;
 import me.pieso.jrrogue.entity.Wall;
-import me.pieso.jrrogue.entity.living.Living;
 import me.pieso.jrrogue.entity.living.Monster;
 import me.pieso.jrrogue.entity.living.Player;
 import me.pieso.jrrogue.entity.pickup.GoldPickup;
+import me.pieso.jrrogue.entity.pickup.SwordPickup;
+import me.pieso.jrrogue.entity.pickup.TorchPickup;
 import me.pieso.jrrogue.entity.trap.HealPad;
-import me.pieso.jrrogue.entity.trap.Trap;
+import me.pieso.jrrogue.entity.trap.Ladders;
 
 public class CellularMap extends MapGenerator {
 
     public static final double IALIVE = 0.45;
-    public static final int ROUNDS = 6;
+    public static final int ROUNDS = 7;
     private boolean[][] cells;
 
     public CellularMap(int width, int height, Player player) {
@@ -99,39 +98,6 @@ public class CellularMap extends MapGenerator {
         cells = ncells;
     }
 
-    public void put(Living l) {
-        while (true) {
-            int x = new Random().nextInt(width);
-            int y = new Random().nextInt(height);
-            if (data[y][x].set(l)) {
-                break;
-            }
-        }
-        live.add(l);
-    }
-
-    public void putTrap(Trap t) {
-        while (true) {
-            int x = new Random().nextInt(width);
-            int y = new Random().nextInt(height);
-            if (data[y][x].get() == null) {
-                data[y][x] = t;
-                t.move(x, y);
-                break;
-            }
-        }
-    }
-
-    public void putPlayer() {
-        while (true) {
-            int x = new Random().nextInt(width);
-            int y = new Random().nextInt(height);
-            if (data[y][x].set(player)) {
-                break;
-            }
-        }
-    }
-
     @Override
     public void generate() {
         init();
@@ -139,6 +105,7 @@ public class CellularMap extends MapGenerator {
             process();
         }
         realize();
+        boxWithWalls();
         putPlayer();
         for (int i = 0; i < (width * height * IALIVE * 0.01); i++) {
             put(new Monster());
@@ -149,7 +116,15 @@ public class CellularMap extends MapGenerator {
         for (int i = 0; i < (width * height * IALIVE * 0.005); i++) {
             putTrap(new HealPad(0, 0));
         }
-        
+        for (int i = 0; i < (width * height * IALIVE * 0.0005); i++) {
+            put(new SwordPickup());
+        }
+        for (int i = 0; i < (width * height * IALIVE * 0.0005); i++) {
+            putTrap(new Ladders(0, 0));
+        }
+        for (int i = 0; i < (width * height * IALIVE * 0.002); i++) {
+            put(new TorchPickup());
+        }
     }
 
 }

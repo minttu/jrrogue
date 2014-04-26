@@ -18,17 +18,17 @@ public class SwordPickup extends Pickup {
 
     @Override
     public void tick(Game game) {
-        
+
     }
 
     @Override
     public void bumpedBy(Entity e) {
-        
+
     }
 
     @Override
     public void bumped(Entity e) {
-        
+
     }
 
 }

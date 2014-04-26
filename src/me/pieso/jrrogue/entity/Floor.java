@@ -13,6 +13,11 @@ public class Floor extends Entity {
     protected static final int maxLight = 4;
     private boolean hasbeenseen;
 
+    private int g;
+    private int f;
+    private Floor parent;
+    private boolean routing;
+
     public Floor(int x, int y) {
         super(ResourceManager.getImage("floor"));
         move(x, y);
@@ -20,6 +25,50 @@ public class Floor extends Entity {
         this.lightLevel = 0;
         this.lastLight = 0;
         this.seen = false;
+
+        this.g = 0;
+        this.f = 0;
+        this.routing = false;
+        this.parent = null;
+    }
+
+    public Floor getParent() {
+        return parent;
+    }
+
+    public void setParent(Floor f) {
+        this.parent = f;
+    }
+
+    public void setRouting(boolean bln) {
+        this.routing = bln;
+    }
+
+    public boolean getPathing() {
+        return this.routing;
+    }
+
+    public void cleanHeur() {
+        this.g = 0;
+        this.f = 0;
+        this.parent = null;
+    }
+
+    public void setG(int g) {
+        this.g = g;
+    }
+
+    public int getG() {
+        return g;
+    }
+
+    public int getF(int ax, int ay) {
+        f = this.g + getH(ax, ay);
+        return f;
+    }
+
+    public int getH(int ax, int ay) {
+        return Math.abs(x() - ax) + Math.abs(y() - ay);
     }
 
     public int lightLevel() {
@@ -86,6 +135,11 @@ public class Floor extends Entity {
         if (ent != null) {
             ent.draw(g, x, y, side);
         }
+        if (routing) {
+            g.setColor(new Color(0f, 1f, 0f, 0.5f));
+            g.drawRect(x, y, side - 1, side - 1);
+            g.drawRect(x + 2, y + 2, side - 5, side - 5);
+        }
         lightLevel = Math.min(maxLight, lightLevel);
         g.setColor(new Color(0f, 0f, 0f, 1f - (float) ((float) lightLevel / (float) maxLight)));
         g.fillRect(x, y, side, side);
@@ -103,6 +157,11 @@ public class Floor extends Entity {
 
     public boolean hasBeenSeen() {
         return hasbeenseen;
+    }
+
+    @Override
+    public String toString() {
+        return "Floor (" + x() + ", " + y() + ")";
     }
 
 }

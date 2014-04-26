@@ -3,6 +3,7 @@ package me.pieso.jrrogue.core;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import me.pieso.jrrogue.entity.Entity;
@@ -11,9 +12,7 @@ import me.pieso.jrrogue.entity.living.Living;
 import me.pieso.jrrogue.entity.living.Player;
 import me.pieso.jrrogue.entity.pickup.TorchPickup;
 import me.pieso.jrrogue.entity.trap.Trap;
-import me.pieso.jrrogue.map.BSPMap;
 import me.pieso.jrrogue.map.CellularMap;
-import me.pieso.jrrogue.map.GenericMap;
 import me.pieso.jrrogue.map.MapGenerator;
 import me.pieso.jrrogue.util.GameHook;
 
@@ -29,6 +28,7 @@ public final class Game implements ActionListener {
     private int side;
     private int level;
     private int frame;
+    private final TimmyTheTimer ttt;
 
     public Game() {
         this.side = 32;
@@ -38,6 +38,7 @@ public final class Game implements ActionListener {
         this.level = 0;
         make(100, 100);
         this.frame = 0;
+        this.ttt = new TimmyTheTimer(100, this);
     }
 
     private void make(int width, int height) {
@@ -235,9 +236,113 @@ public final class Game implements ActionListener {
         return res;
     }
 
+    /**
+     * A star
+     *
+     * @param x target x
+     * @param y target y
+     */
+    public void trypath(int x, int y) {
+
+        if (x == player.x() && y == player.y()) {
+            player.setUse(true);
+            tick();
+            return;
+        }
+
+        List<Floor> open = new ArrayList<>();
+        List<Floor> closed = new ArrayList<>();
+        if (x < 0 || y < 0 || x >= width || y >= height) {
+            return;
+        }
+        Floor exit = data[y][x];
+        if (exit.solid()) {
+            return;
+        }
+        data[player.y()][player.x()].setG(0);
+        open.add(data[player.y()][player.x()]);
+        while (!open.isEmpty()) {
+            Floor lowest = open.get(0);
+            lowest.getF(x, y);
+            for (Floor f : open) {
+                if (f.getF(x, y) < lowest.getF(x, y)) {
+                    lowest = f;
+                }
+            }
+            if (lowest == exit) {
+                Floor current = lowest;
+                List<Floor> out = new ArrayList<>();
+                while (current.getParent() != null) {
+                    out.add(current);
+                    current = current.getParent();
+                }
+                Collections.reverse(out);
+                ttt.empty();
+                for (Floor f : out) {
+                    f.setRouting(true);
+                    ttt.add(f);
+                }
+                if (!out.isEmpty()) {
+                    out.get(0).setRouting(false);
+                }
+                break;
+            }
+            open.remove(lowest);
+            closed.add(lowest);
+
+            List<Floor> neigh = new ArrayList<>();
+            if (lowest.x() - 1 > 0) {
+                neigh.add(data[lowest.y()][lowest.x() - 1]);
+            }
+            if (lowest.x() + 1 < width - 1) {
+                neigh.add(data[lowest.y()][lowest.x() + 1]);
+            }
+            if (lowest.y() - 1 > 0) {
+                neigh.add(data[lowest.y() - 1][lowest.x()]);
+            }
+            if (lowest.y() + 1 < height - 1) {
+                neigh.add(data[lowest.y() + 1][lowest.x()]);
+            }
+            for (Floor floor : neigh) {
+                if (floor.solid() || closed.contains(floor)) {
+                    continue;
+                }
+                int nextG = lowest.getG() + 10;
+
+                boolean asd = false;
+                if (!open.contains(floor)) {
+                    open.add(floor);
+                    asd = true;
+                } else if (nextG < floor.getG()) {
+                    asd = true;
+                }
+                if (asd) {
+                    floor.setParent(lowest);
+                    floor.setG(nextG);
+                    floor.getH(x, y);
+                }
+            }
+        }
+        for (Floor f : closed) {
+            f.cleanHeur();
+        }
+        for (Floor f : open) {
+            f.cleanHeur();
+        }
+    }
+
     public boolean movePlayer(int dx, int dy) {
+        if (!canMove(player, player.x(), player.y(), player.x() + dx, player.y() + dy)) {
+            ttt.empty();
+        }
+        Floor f = data[player.y() + dy][ player.x() + dx];
+        f.setRouting(false);
         boolean b = move(player, player.x(), player.y(), player.x() + dx, player.y() + dy);
+
         tick();
+        if (!player.living()) {
+            return false;
+        }
         return b;
     }
 
@@ -303,6 +408,9 @@ public final class Game implements ActionListener {
     }
 
     public void tick() {
+        if (!player.living()) {
+            return;
+        }
         frame++;
         ArrayList<Living> deletion = new ArrayList<>();
         player.tick(this);

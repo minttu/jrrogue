@@ -20,9 +20,19 @@ class GameArea extends JPanel implements GameHook {
 
     private int side;
     private Game game;
+    private int lastoffsetx;
+    private int lastoffsety;
 
     public GameArea() {
         super.setBackground(Color.WHITE);
+    }
+
+    public int offsetX() {
+        return lastoffsetx;
+    }
+
+    public int offsetY() {
+        return lastoffsety;
     }
 
     @Override
@@ -38,6 +48,8 @@ class GameArea extends JPanel implements GameHook {
 
         int mx = (getWidth() / 2) - ((player.x()) * side) - 16;
         int my = (getHeight() / 2) - ((player.y()) * side) - 16;
+        lastoffsetx = mx;
+        lastoffsety = my;
 
         for (int y = 0; y < data.length; y++) {
             for (int x = 0; x < data[y].length; x++) {
@@ -73,10 +85,10 @@ class GameArea extends JPanel implements GameHook {
         // minimap
         int per = getWidth() / 4 / data.length;
         /*g.setColor(new Color(1f, 1f, 1f, .5f));
-        g.drawRect(12, 12, (data[0].length + 1) * per - 1, data.length * per);
-        g.drawRect(13, 13, (data[0].length + 1) * per - 3, data.length * per - 2);
-        g.setColor(new Color(1f, 1f, 1f, .25f));
-        g.fillRect(14, 14, (data[0].length + 1) * per - 3, data[0].length * per - 2);*/
+         g.drawRect(12, 12, (data[0].length + 1) * per - 1, data.length * per);
+         g.drawRect(13, 13, (data[0].length + 1) * per - 3, data.length * per - 2);
+         g.setColor(new Color(1f, 1f, 1f, .25f));
+         g.fillRect(14, 14, (data[0].length + 1) * per - 3, data[0].length * per - 2);*/
         for (int y = 0; y < data.length; y++) {
             for (int x = 0; x < data[y].length; x++) {
                 if (data[y][x] != null) {

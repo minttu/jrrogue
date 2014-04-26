@@ -29,7 +29,7 @@ ToDo
 - More items
 - Armor
 - Monster spawners
-- A*
+- Optimize A* and los
 
 Assets
 ======

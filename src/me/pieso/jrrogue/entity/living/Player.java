@@ -97,7 +97,7 @@ public class Player extends Living {
         sb.append("XP ").append(xp).append("/").append(maxxp);
         sb.append(" | ");
         sb.append("Dungeon ").append(dungeon);
-        sb.append("\n");
+        sb.append("\r\n");
         for (String s : status) {
             sb.append(s).append(" ");
         }
@@ -108,7 +108,7 @@ public class Player extends Living {
     public void addStatus(String... sss) {
         String ss = "";
         for (int i = 0; i < sss.length; i++) {
-            ss += sss[i] + (i == sss.length - 1 ? "." : " ");
+            ss += sss[i] + (i == sss.length - 1 ? ".\n" : " ");
         }
         status.add(ss);
     }
@@ -146,6 +146,9 @@ public class Player extends Living {
 
     @Override
     public boolean takeDamage(int amount, Living from) {
+        if (!from.living()) {
+            return false;
+        }
         boolean b = super.takeDamage(amount, from);
         if (from != null) {
             if (amount > 0) {
@@ -157,7 +160,7 @@ public class Player extends Living {
                 addStatus("It was fatal");
             }
         }
-        if (hp() < 1) {
+        if (b && hp() < 1) {
             addStatus("You are dead");
             addStatus("Game over");
             addStatus("Goodbye");

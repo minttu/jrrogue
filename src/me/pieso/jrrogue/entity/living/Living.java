@@ -58,6 +58,9 @@ public abstract class Living extends Entity {
     }
 
     public boolean takeDamage(int amount, Living from) {
+        if (!from.living()) {
+            return false;
+        }
         if (amount > 0) {
             washurt.add(amount);
         }

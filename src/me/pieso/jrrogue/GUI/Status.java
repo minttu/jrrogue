@@ -3,11 +3,16 @@ package me.pieso.jrrogue.GUI;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.swing.JTextArea;
 import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.util.GameHook;
+import me.pieso.jrrogue.util.GraphicsUtils;
 
 final class Status extends JTextArea implements GameHook {
 
@@ -25,10 +30,25 @@ final class Status extends JTextArea implements GameHook {
     public void hook(Game game) {
         String[] statusb = game.getPlayer().toStatus().split("\n");
         StringBuilder sb = new StringBuilder();
+        int cur = 0;
         for (int st = 0; st < statusb.length; st++) {
-            sb.append(" ").append(statusb[st]).append(st < statusb.length - 1 ? "\n" : "");
+            if (statusb[st].contains("\r")) {
+                sb.append(statusb[st]).append("\n");
+            } else {
+                cur += statusb[st].length();
+                if (cur > getWidth() / getColumnWidth()) {
+                    cur = 0;
+                    sb.append("\n");
+                }
+                if (cur == 0 && statusb[st].charAt(0) == ' ') {
+                    sb.append(statusb[st].substring(1));
+                } else {
+                    sb.append(statusb[st]);
+                }
+            }
         }
         setText(sb.toString());
+        //setText(game.getPlayer().toStatus());
     }
 
     @Override
@@ -40,7 +60,13 @@ final class Status extends JTextArea implements GameHook {
                 g.drawImage(bg, x, y, bg.getWidth() * 2, bg.getHeight() * 2, null);
             }
         }
-        super.paintComponent(g);
+        //super.paintComponent(g);
+        g.setFont(getFont());
+        g.setColor(getForeground());
+        String[] status = getText().split("\n");
+        for (int i = 0; i < status.length; i++) {
+            GraphicsUtils.drawTextOutlined(g, new Rectangle(4, (int) (getFontMetrics(getFont()).getHeight() * (i + 0.75)), 0, 0), status[i], Color.white, Color.black);
+        }
     }
 
 }

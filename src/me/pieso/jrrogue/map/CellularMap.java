@@ -143,7 +143,7 @@ public class CellularMap extends MapGenerator {
             putTrap(new Ladders(0, 0));
         }
         for (int i = 0; i < (width * height * IALIVE * 0.002); i++) {
-            put(new TorchPickup());
+            //put(new TorchPickup());
         }
     }
 

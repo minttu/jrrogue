@@ -72,6 +72,7 @@ public abstract class Living extends Entity {
         }
         hp -= amount;
         if (hp < 1) {
+            hp = 0;
             dead = true;
             return true;
         }
@@ -98,9 +99,9 @@ public abstract class Living extends Entity {
     }
 
     public int toXP() {
-        return (int) ((maxhp * dmg.max()) / 10);
+        return (int) ((maxhp * dmg.max()) / 10) + 1;
     }
-    
+
     public Damage dmg() {
         return dmg;
     }

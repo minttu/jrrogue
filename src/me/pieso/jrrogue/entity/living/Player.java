@@ -15,7 +15,7 @@ import me.pieso.jrrogue.item.SwordItem;
 import me.pieso.jrrogue.item.TorchItem;
 
 public class Player extends Living {
-    
+
     private int xp;
     private int maxxp;
     private int level;
@@ -26,10 +26,10 @@ public class Player extends Living {
     private int dungeon;
     private final Inventory inventory;
     private double hunger;
-    
+
     public Player() {
         super(ResourceManager.getImage("player"), 16);
-        
+
         level = 1;
         xp = 0;
         maxxp = 20;
@@ -39,70 +39,74 @@ public class Player extends Living {
         use = false;
         dungeon = 0;
         hunger = 0;
-        
+
         inventory = new Inventory();
         inventory.add(new SwordItem());
         inventory.add(new TorchItem(6));
         inventory.add(new GoldItem(0));
         inventory.add(new FoodItem(2));
     }
-    
+
     @Override
     public String name() {
         return "player";
     }
-    
+
     public Inventory inventory() {
         return this.inventory;
     }
-    
+
     public int XP() {
         return xp;
     }
-    
+
     public int maxXP() {
         return maxxp;
     }
-    
+
     public int level() {
         return level;
     }
-    
+
+    public double hunger() {
+        return hunger;
+    }
+
     public void addXP(int amount) {
         xp += amount;
         while (xp >= maxxp) {
             levelUp();
         }
     }
-    
+
     private void levelUp() {
         maxxp *= 2;
         limit(level * 6);
         level++;
         addStatus("You reached level", level + "");
     }
-    
+
     public String toStatus() {
         StringBuilder sb = new StringBuilder();
-        sb.append("HP ").append(hp()).append("/").append(maxhp());
-        sb.append(" | ");
-        sb.append("DPT ").append(dmg().min()).append("-").append(dmg().max());
-        sb.append(" | ");
-        sb.append("LV ").append(level);
-        sb.append(" | ");
-        sb.append("XP ").append(xp).append("/").append(maxxp);
-        sb.append(" | ");
-        sb.append("Dungeon ").append(dungeon);
-        sb.append(" | ");
-        sb.append(String.format("HNG %d", (int) (100 * (1 - hunger))));
-        sb.append("\r\n");
+        /*sb.append("HP ").append(hp()).append("/").append(maxhp());
+         sb.append(" | ");
+         sb.append("DPT ").append(dmg().min()).append("-").append(dmg().max());
+         sb.append(" | ");
+         sb.append("LV ").append(level);
+         sb.append(" | ");
+         sb.append("XP ").append(xp).append("/").append(maxxp);
+         sb.append(" | ");
+         sb.append("Dungeon ").append(dungeon);
+         sb.append(" | ");
+         sb.append(String.format("HNG %d", (int) (100 * (1 - hunger))));
+         sb.append("\r\n");*/
         for (String s : status) {
             sb.append(s).append(" ");
         }
         status.clear();
         return sb.toString();
     }
-    
+
     public void addStatus(String... sss) {
         String ss = "";
         for (int i = 0; i < sss.length; i++) {
@@ -112,7 +116,7 @@ public class Player extends Living {
         }
         status.add(ss);
     }
-    
+
     @Override
     public void tick(Game game) {
         inventory.checkUnloads(game);
@@ -135,14 +139,14 @@ public class Player extends Living {
         } else if (hunger > 0.8) {
             addStatus("You are really hungry");
         }
-        
+
     }
-    
+
     @Override
     public void bumpedBy(Entity e) {
-        
+
     }
-    
+
     @Override
     public boolean takeDamage(int amount, Living from) {
         if (from != null && !from.living()) {
@@ -164,7 +168,7 @@ public class Player extends Living {
         }
         return b;
     }
-    
+
     @Override
     public void bumped(Entity e) {
         if (e instanceof Pickup) {
@@ -189,31 +193,35 @@ public class Player extends Living {
             }
         }
     }
-    
+
     public void setAscend(boolean bln) {
         ascend = bln;
     }
-    
+
     public boolean shouldAscend() {
         return ascend;
     }
-    
+
     public void setUse(boolean b) {
         use = b;
     }
-    
+
     public boolean use() {
         return use;
     }
-    
-    public void dungeon(int level) {
+
+    public int dungeon() {
+        return dungeon;
+    }
+
+    public void setDungeon(int level) {
         this.dungeon = level;
         addStatus("Welcome to the", level + ".", "dungeon");
     }
-    
+
     public void eat(double d) {
         this.hunger -= d;
         this.hunger = Math.max(0, this.hunger);
     }
-    
+
 }

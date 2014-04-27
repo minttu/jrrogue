@@ -13,6 +13,6 @@ public class GoldItem extends Item {
 
     @Override
     public void onUse(Game game) {
-        
+
     }
 }

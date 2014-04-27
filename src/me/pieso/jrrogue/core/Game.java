@@ -55,7 +55,7 @@ public final class Game implements ActionListener {
         this.data = mg.getData();
         this.live = mg.getLive();
         this.player = mg.getPlayer();
-        player.dungeon(level);
+        player.setDungeon(level);
         calculateVision();
     }
 

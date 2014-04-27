@@ -3,6 +3,7 @@ package me.pieso.jrrogue.item;
 import java.awt.Color;
 
 public class Tier {
+
     public static final Tier[] tiers = new Tier[]{
         new Tier("wood", 0.5, new Color(200, 121, 0)),
         new Tier("bronze", 1, new Color(255, 135, 0)),

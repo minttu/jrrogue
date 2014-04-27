@@ -18,6 +18,7 @@ public abstract class Living extends Entity {
 
     private int hp;
     private int maxhp;
+    private int oghp;
 
     private Damage dmg;
     private double hitrate;
@@ -35,6 +36,7 @@ public abstract class Living extends Entity {
 
     public Living(BufferedImage image, int hp) {
         super(image);
+        this.oghp = hp;
         this.hp = hp;
         this.maxhp = hp;
         this.dmg = new Damage(0, 0);
@@ -54,6 +56,10 @@ public abstract class Living extends Entity {
 
     public int maxhp() {
         return maxhp;
+    }
+
+    public int oghp() {
+        return oghp;
     }
 
     public void heal(int amount) {
@@ -80,6 +86,10 @@ public abstract class Living extends Entity {
     }
 
     public abstract String name();
+
+    public void setMaxHP(int amount) {
+        maxhp = amount;
+    }
 
     public void limit(int amount) {
         maxhp += amount;

@@ -128,13 +128,13 @@ public abstract class Item {
         g.fillRect(rec.x, rec.y, rec.width, rec.height);
         g.drawImage(img, rec.x, rec.y, rec.width, rec.height, null);
         if (amount == 0) {
-            g.setColor(new Color(0f, 0f, 0f, 0.25f));
+            g.setColor(new Color(0f, 0f, 0f, 0.5f));
             g.fillRect(rec.x, rec.y, rec.width, rec.height);
         }
         if (this.showAmount) {
             String s = amount + "";
             Rectangle2D r2d = g.getFontMetrics().getStringBounds(s, g);
-            g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+            g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
             GraphicsUtils.drawTextOutlined(g,
                     new Rectangle((int) (rec.x + rec.width - r2d.getWidth() - 2), rec.y + rec.height - 2, 0, 0),
                     s, Color.white, Color.black);

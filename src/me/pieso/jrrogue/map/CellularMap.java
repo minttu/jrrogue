@@ -6,6 +6,7 @@ import me.pieso.jrrogue.entity.Leaves;
 import me.pieso.jrrogue.entity.Wall;
 import me.pieso.jrrogue.entity.living.Monster;
 import me.pieso.jrrogue.entity.living.Player;
+import me.pieso.jrrogue.entity.pickup.Chest;
 import me.pieso.jrrogue.entity.pickup.GoldPickup;
 import me.pieso.jrrogue.entity.pickup.SwordPickup;
 import me.pieso.jrrogue.entity.pickup.TorchPickup;
@@ -137,13 +138,10 @@ public class CellularMap extends MapGenerator {
             putTrap(new HealPad(0, 0));
         }
         for (int i = 0; i < (width * height * IALIVE * 0.0005); i++) {
-            put(new SwordPickup());
-        }
-        for (int i = 0; i < (width * height * IALIVE * 0.0005); i++) {
             putTrap(new Ladders(0, 0));
         }
         for (int i = 0; i < (width * height * IALIVE * 0.002); i++) {
-            //put(new TorchPickup());
+            put(new Chest());
         }
     }
 

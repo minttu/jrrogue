@@ -4,10 +4,10 @@ import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.entity.Entity;
 
-public class GoldPickup extends Pickup {
+public class FoodPickup extends Pickup {
 
-    public GoldPickup() {
-        super(ResourceManager.getImage("gold"));
+    public FoodPickup() {
+        super(ResourceManager.getImage("food"));
     }
 
     @Override
@@ -22,7 +22,7 @@ public class GoldPickup extends Pickup {
 
     @Override
     public String name() {
-        return "a gold coin";
+        return "an apple";
     }
 
     @Override

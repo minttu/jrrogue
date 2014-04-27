@@ -12,6 +12,7 @@ import me.pieso.jrrogue.entity.living.Living;
 import me.pieso.jrrogue.entity.living.Player;
 import me.pieso.jrrogue.entity.pickup.TorchPickup;
 import me.pieso.jrrogue.entity.trap.Trap;
+import me.pieso.jrrogue.item.GoldItem;
 import me.pieso.jrrogue.map.CellularMap;
 import me.pieso.jrrogue.map.MapGenerator;
 import me.pieso.jrrogue.util.GameHook;
@@ -29,6 +30,11 @@ public final class Game implements ActionListener {
     private int level;
     private int frame;
     private final TimmyTheTimer ttt;
+    public boolean typing;
+    public String type;
+    public int typing_caret;
+    public List<String> type_history;
+    public int type_history_place;
 
     public Game() {
         this.side = 32;
@@ -38,6 +44,11 @@ public final class Game implements ActionListener {
         this.level = 0;
         make(100, 100);
         this.frame = 0;
+        this.typing = false;
+        this.type = "";
+        this.typing_caret = 0;
+        this.type_history = new ArrayList<>();
+        this.type_history_place = 0;
         this.ttt = new TimmyTheTimer(100, this);
     }
 
@@ -381,9 +392,11 @@ public final class Game implements ActionListener {
         return false;
     }
 
-    public boolean move(Entity e, int x1, int y1, int x2, int y2) {
-        if (Math.abs(x1 - x2) > 0 && Math.abs(y1 - y2) > 0) {
-            return false;
+    public boolean move(Entity e, int x1, int y1, int x2, int y2, boolean check) {
+        if (check) {
+            if (Math.abs(x1 - x2) > 0 && Math.abs(y1 - y2) > 0) {
+                return false;
+            }
         }
         if (x1 >= 0 && x1 < width && y1 >= 0 && y1 < height
                 && x2 >= 0 && x2 < width && y2 >= 0 && y2 < height) {
@@ -407,11 +420,14 @@ public final class Game implements ActionListener {
         return false;
     }
 
+    public boolean move(Entity e, int x1, int y1, int x2, int y2) {
+        return move(e, x1, y1, x2, y2, true);
+    }
+
     public void tick() {
         if (!player.living()) {
             return;
         }
-        frame++;
         ArrayList<Living> deletion = new ArrayList<>();
         player.tick(this);
         if (player.use()) {
@@ -442,6 +458,7 @@ public final class Game implements ActionListener {
         }
         calculateVision();
         runHooks();
+        frame++;
     }
 
     public Entity[][] getData() {
@@ -487,6 +504,10 @@ public final class Game implements ActionListener {
 
     public int getSide() {
         return side;
+    }
+
+    public int frames() {
+        return frame;
     }
 
     /* 
@@ -535,5 +556,94 @@ public final class Game implements ActionListener {
         }
 
         return false;
+    }
+
+    public void command() {
+        if (!typing || type.length() < 0) {
+            typing = false;
+            type = "";
+            typing_caret = 0;
+            return;
+        }
+        player.addStatus(false, ":" + type);
+        //if (type.contains(" ")) {
+        Boolean tt = false;
+        String[] cmds = type.split(" ");
+        int len = cmds.length;
+        switch (cmds[0]) {
+            case "v":
+            case "vision":
+                setVision(!vision);
+                tt = true;
+                break;
+            case "rv":
+            case "resetvision":
+                resetVision();
+                calculateVision();
+                tt = true;
+                break;
+            case "gold":
+                if (len == 1) {
+                    player.inventory().add(new GoldItem(1));
+                } else {
+                    try {
+                        player.inventory().add(new GoldItem(Integer.parseInt(cmds[1])));
+                    } catch (NumberFormatException ex) {
+
+                    }
+                }
+                tt = true;
+                break;
+            case "xp":
+                if (len == 2) {
+                    try {
+                        player.addXP(Integer.parseInt(cmds[1]));
+                        tt = true;
+                    } catch (NumberFormatException ex) {
+
+                    }
+                }
+                break;
+            case "heal":
+            case "hp":
+                if (len == 1) {
+                    player.heal(999999999);
+                } else if (len == 2) {
+                    try {
+                        player.heal(Integer.parseInt(cmds[1]));
+                        tt = true;
+                    } catch (NumberFormatException ex) {
+
+                    }
+                }
+                break;
+            case "tp":
+                if (len == 3) {
+                    try {
+                        int px = player.x();
+                        int py = player.y();
+                        int dx = px + Integer.parseInt(cmds[1]);
+                        int dy = py + Integer.parseInt(cmds[2]);
+                        move(player, px, py, dx, dy, false);
+                        tt = true;
+                    } catch (NumberFormatException ex) {
+
+                    }
+                }
+                break;
+            default:
+                player.addStatus("Unknown command");
+        }
+        if (tt) {
+            tick();
+        }
+        //}
+        if (type.length() > 0) {
+            type_history.add(type);
+        }
+        typing = false;
+        type = "";
+        typing_caret = 0;
+        type_history_place = 0;
     }
 }

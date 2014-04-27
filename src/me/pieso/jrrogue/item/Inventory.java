@@ -4,9 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import jdk.nashorn.internal.codegen.types.Type;
 import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.util.GraphicsUtils;
 import me.pieso.jrrogue.core.ResourceManager;
@@ -108,7 +106,7 @@ public class Inventory {
 
     public void draw(Graphics g, Rectangle rec) {
         int single = (rec.width - 6) / 3;
-        int height = (rec.height - 4) / 3 * (items.size() / 3 + 1) + 3;
+        int height = (rec.height - 4) + 3;
         for (int x = rec.x - rec.width; x < rec.x; x += 32) {
             g.drawImage(ResourceManager.getImage("bdown"), x, rec.y - height - 10, null);
         }
@@ -131,7 +129,7 @@ public class Inventory {
                     single, single);
 
             items.get(i).draw(g, nrec);
-            g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+            g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
             GraphicsUtils.drawTextOutlined(g,
                     new Rectangle(nrec.x + 1, nrec.y + 10, 0, 0),
                     "" + letters[i], Color.WHITE, Color.BLACK);

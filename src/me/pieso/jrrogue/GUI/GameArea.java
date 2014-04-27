@@ -5,7 +5,9 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.JPanel;
 import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
@@ -24,9 +26,11 @@ class GameArea extends JPanel implements GameHook {
     private int lastoffsetx;
     private int lastoffsety;
     private int per;
+    private boolean bbb;
 
     public GameArea() {
         super.setBackground(Color.WHITE);
+        bbb = true;
     }
 
     public int offsetX() {
@@ -105,7 +109,7 @@ class GameArea extends JPanel implements GameHook {
         int x = (getWidth() - width) / 2;
         int y = getHeight() - height;
 
-        g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, per * 12));
+        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, per * 12));
 
         for (int xx = x; xx < x + width; xx += 32) {
             g.drawImage(ResourceManager.getImage("bdown"), xx, y - 10, null);
@@ -124,14 +128,17 @@ class GameArea extends JPanel implements GameHook {
         g.fillRect(x, y, width, height);
 
         int[] vals = new int[]{
-            (width / player.maxhp()) * (player.hp()),
-            (width / player.maxXP()) * (player.XP()),
-            (int) ((width) * (1 - player.hunger()))
+            (int) (((double) width / (double) player.maxhp()) * ((double) player.hp())),
+            (int) (((double) width / (double) player.maxXP()) * ((double) player.XP())),
+            (int) (((double) width) * (double) (1 - player.hunger())),
+            0, 0
         };
         Color[] cols = new Color[]{
             Color.red,
             Color.blue,
-            Color.yellow
+            Color.yellow,
+            Color.white,
+            Color.white
         };
         for (int i = 0; i < vals.length; i++) {
             g.setColor(new Color(1f, 1f, 1f, 0.25f));
@@ -139,16 +146,16 @@ class GameArea extends JPanel implements GameHook {
             g.setColor(cols[i]);
             g.fillRect(x, y + height / rows * i, vals[i], height / rows);
             g.setColor(new Color(1f, 1f, 1f, 0.5f));
-            g.fillRect(x, y + height / rows * i, vals[i], (height / rows) / 2);
+            g.fillRect(x, y + height / rows * i, vals[i], (height / rows) / 3);
             g.setColor(Color.black);
-            g.fillRect(x, y + height / rows * i + (height / rows) - 1, width, 1);
+            g.drawRect(x, y + height / rows * i, width, height / rows);
         }
 
         String[] msgs = new String[]{
             "HP " + player.hp() + "/" + player.maxhp(),
             "(LVL " + player.level() + ") XP " + player.XP() + "/" + player.maxXP(),
-            "Fullness",
-            "DMG " + player.dmg().min() + "-" + player.dmg().max(),
+            String.format("Fullness %d%%", 100 - (int) (player.hunger() * 100)),
+            "ADPT " + (player.dmg().min() + player.dmg().max()) / 2,
             "Dungeon " + player.dungeon()
         };
         for (int i = 1; i <= msgs.length; i++) {
@@ -156,6 +163,33 @@ class GameArea extends JPanel implements GameHook {
             Rectangle drec = new Rectangle(getWidth() / 2 - (int) r2d.getWidth() / 2,
                     y + height / rows * i - (per * 4), 0, 0);
             GraphicsUtils.drawTextOutlined(g, drec, msgs[i - 1], Color.WHITE, Color.BLACK);
+        }
+    }
+
+    private void msgs(Graphics g) {
+        String raw = game.getPlayer().toStatus();
+        List<String> all = new ArrayList<>();
+        all.addAll(Arrays.asList(raw.split("\n")));
+        g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, (14) * per));
+        for (int i = 0; i < all.size(); i++) {
+            String s = all.get(i);
+            Color col = Color.WHITE;
+            if (s.contains("@")) {
+                int cur = Integer.parseInt(s.split("@")[0]);
+                s = s.split("@")[1];
+                if (game.getPlayer().lret() - cur > 1) {
+                    col = new Color(.75f, .75f, .75f);
+                }
+            }
+            GraphicsUtils.drawTextOutlined(g, new Rectangle(12, 8 + ((i + 1) * ((14) * per + 2)), 0, 0), s, col, Color.BLACK);
+        }
+        if (game.typing) {
+            //bbb = !bbb;
+            String s = game.type;
+            String ss = ":" + s.substring(0, game.typing_caret) + (bbb ? "|" : " ") + s.substring(game.typing_caret);
+            //g.setColor(Color.WHITE);
+            //g.drawString(ss, 12, 8 + ((11) * ((12) * per + 2)));
+            GraphicsUtils.drawTextOutlined(g, new Rectangle(12, 8 + ((11) * ((14) * per + 2)), 0, 0), ss, Color.WHITE, Color.BLACK);
         }
     }
 
@@ -209,6 +243,7 @@ class GameArea extends JPanel implements GameHook {
         // minimap
         minimap(g);
         stats(g);
+        msgs(g);
 
         int invside = (32 * per) * 3 + 7;
         player.inventory().draw(g, new Rectangle(getWidth(), getHeight(), invside, invside));

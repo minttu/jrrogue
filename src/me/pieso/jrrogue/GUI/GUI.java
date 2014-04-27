@@ -17,6 +17,8 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import me.pieso.jrrogue.core.Game;
+import me.pieso.jrrogue.item.ArmorItem;
+import me.pieso.jrrogue.item.RingItem;
 import me.pieso.jrrogue.item.SwordItem;
 
 public class GUI implements Runnable {
@@ -46,8 +48,8 @@ public class GUI implements Runnable {
 
         this.ga = new GameArea();
         game.addHook(ga);
-        Status status = new Status();
-        game.addHook(status);
+        //Status status = new Status();
+        //game.addHook(status);
         game.runHooks();
         KB kb = new KB(game);
         ga.setFocusable(true);
@@ -71,6 +73,10 @@ public class GUI implements Runnable {
         debug.add(resetvision);
         final JMenuItem givesword = new JMenuItem("Give sword");
         debug.add(givesword);
+        final JMenuItem givearmor = new JMenuItem("Give armor");
+        debug.add(givearmor);
+        final JMenuItem givering = new JMenuItem("Give ring");
+        debug.add(givering);
 
         newgame.addActionListener(new ActionListener() {
 
@@ -103,21 +109,37 @@ public class GUI implements Runnable {
         });
 
         givesword.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent ae) {
                 game.getPlayer().inventory().add(new SwordItem());
                 game.calculateVision();
                 game.runHooks();
             }
+        });
 
+        givearmor.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                game.getPlayer().inventory().add(new ArmorItem());
+                game.calculateVision();
+                game.runHooks();
+            }
+        });
+
+        givering.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                game.getPlayer().inventory().add(new RingItem());
+                game.calculateVision();
+                game.runHooks();
+            }
         });
 
         pane.add(bar, BorderLayout.NORTH);
 
         pane.add(ga, BorderLayout.CENTER);
 
-        pane.add(status, BorderLayout.SOUTH);
+        //pane.add(status, BorderLayout.SOUTH);
     }
 
 }

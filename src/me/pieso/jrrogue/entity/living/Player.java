@@ -6,11 +6,14 @@ import java.util.Random;
 import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.entity.Entity;
+import me.pieso.jrrogue.entity.pickup.Chest;
 import me.pieso.jrrogue.entity.pickup.Pickup;
+import me.pieso.jrrogue.item.ArmorItem;
 import me.pieso.jrrogue.item.FoodItem;
 import me.pieso.jrrogue.item.GoldItem;
 import me.pieso.jrrogue.item.Inventory;
 import me.pieso.jrrogue.item.Item;
+import me.pieso.jrrogue.item.RingItem;
 import me.pieso.jrrogue.item.SwordItem;
 import me.pieso.jrrogue.item.TorchItem;
 
@@ -26,25 +29,34 @@ public class Player extends Living {
     private int dungeon;
     private final Inventory inventory;
     private double hunger;
+    private int lret;
 
     public Player() {
         super(ResourceManager.getImage("player"), 16);
 
         level = 1;
         xp = 0;
-        maxxp = 20;
+        maxxp = 10;
         status = new ArrayList<>();
         moves = 0;
         ascend = false;
         use = false;
         dungeon = 0;
         hunger = 0;
+        lret = 0;
 
         inventory = new Inventory();
         inventory.add(new SwordItem());
+        inventory.add(new SwordItem());
+        inventory.add(new ArmorItem());
+        inventory.add(new RingItem());
         inventory.add(new TorchItem(6));
         inventory.add(new GoldItem(0));
         inventory.add(new FoodItem(2));
+
+        for (int i = 0; i < 10; i++) {
+            status.add("\n");
+        }
     }
 
     @Override
@@ -80,41 +92,40 @@ public class Player extends Living {
     }
 
     private void levelUp() {
-        maxxp *= 2;
-        limit(level * 6);
+        xp -= maxxp;
+        maxxp *= 1.5;
         level++;
         addStatus("You reached level", level + "");
     }
 
     public String toStatus() {
         StringBuilder sb = new StringBuilder();
-        /*sb.append("HP ").append(hp()).append("/").append(maxhp());
-         sb.append(" | ");
-         sb.append("DPT ").append(dmg().min()).append("-").append(dmg().max());
-         sb.append(" | ");
-         sb.append("LV ").append(level);
-         sb.append(" | ");
-         sb.append("XP ").append(xp).append("/").append(maxxp);
-         sb.append(" | ");
-         sb.append("Dungeon ").append(dungeon);
-         sb.append(" | ");
-         sb.append(String.format("HNG %d", (int) (100 * (1 - hunger))));
-         sb.append("\r\n");*/
         for (String s : status) {
-            sb.append(s).append(" ");
+            sb.append(s);
         }
-        status.clear();
+        lret++;
         return sb.toString();
     }
 
-    public void addStatus(String... sss) {
-        String ss = "";
+    public void addStatus(boolean dot, String... sss) {
+        String ss = lret + "@";
         for (int i = 0; i < sss.length; i++) {
             if (sss[i].length() > 0) {
-                ss += sss[i] + (i == sss.length - 1 ? ".\n" : " ");
+                ss += sss[i] + (i == sss.length - 1 ? (dot ? "." : "") + "\n" : " ");
             }
         }
         status.add(ss);
+        if (status.size() > 10) {
+            status.remove(0);
+        }
+    }
+
+    public void addStatus(String... sss) {
+        addStatus(true, sss);
+    }
+
+    public int lret() {
+        return lret;
     }
 
     @Override
@@ -124,7 +135,10 @@ public class Player extends Living {
         if (sword != null) {
             setDmg(sword.getDamage());
         }
-        moves++;
+        ArmorItem armor = (ArmorItem) inventory.findClass(ArmorItem.class);
+        if (sword != null) {
+            setMaxHP((int) (oghp() + ((maxxp / 10) * armor.value())));
+        }
         if (moves % 40 == 0) {
             heal(maxhp() / 10);
         }
@@ -139,7 +153,7 @@ public class Player extends Living {
         } else if (hunger > 0.8) {
             addStatus("You are really hungry");
         }
-
+        moves++;
     }
 
     @Override
@@ -171,15 +185,28 @@ public class Player extends Living {
 
     @Override
     public void bumped(Entity e) {
-        if (e instanceof Pickup) {
+        if (e instanceof Chest) {
+            Chest c = (Chest) e;
+            c.takeDamage(1, this);
+            addStatus("You opened a chest");
+            if (c.items().isEmpty()) {
+                addStatus("It was empty");
+            }
+            for (Pickup p : c.items()) {
+                addStatus("You picked up", p.name());
+                Item i = inventory.findLinked((p).getClass());
+                if (i != null) {
+                    i.add(1);
+                }
+            }
+        } else if (e instanceof Pickup) {
             ((Pickup) e).takeDamage(1, this);
             addStatus("You picked up", ((Pickup) e).name());
             Item i = inventory.findLinked(((Pickup) e).getClass());
             if (i != null) {
                 i.add(1);
             }
-        }
-        if (e instanceof Monster) {
+        } else if (e instanceof Monster) {
             Living m = (Living) e;
             int dmg = getDamage();
             if (dmg == 0) {
@@ -222,6 +249,10 @@ public class Player extends Living {
     public void eat(double d) {
         this.hunger -= d;
         this.hunger = Math.max(0, this.hunger);
+    }
+
+    public int moves() {
+        return moves;
     }
 
 }

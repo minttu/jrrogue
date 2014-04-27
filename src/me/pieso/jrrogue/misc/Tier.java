@@ -1,4 +1,4 @@
-package me.pieso.jrrogue.item;
+package me.pieso.jrrogue.misc;
 
 import java.awt.Color;
 
@@ -13,7 +13,7 @@ public class Tier {
         new Tier("hellstone", 5, new Color(220, 75, 75)),
         new Tier("elf", 7, new Color(75, 75, 220)),
         new Tier("uranium", 9, new Color(75, 220, 75)),
-        new Tier("crystal", 12, new Color(235, 235, 235))
+        new Tier("crystal", 12, new Color(180, 180, 235))
     };
 
     public final String name;

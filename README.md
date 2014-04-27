@@ -8,7 +8,7 @@ Inspired by Rogue, the Mystery Dungeon series, Minecraft and MOOC.
 Screenshot
 ==========
 
-![Interface](https://juhaniimberg.github.io/jrrogue/s2.png)
+![Interface](https://juhaniimberg.github.io/jrrogue/s3.png)
 
 Keys
 ====

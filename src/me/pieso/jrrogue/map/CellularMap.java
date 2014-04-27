@@ -1,6 +1,8 @@
 package me.pieso.jrrogue.map;
 
 import me.pieso.jrrogue.entity.Floor;
+import me.pieso.jrrogue.entity.Grass;
+import me.pieso.jrrogue.entity.Leaves;
 import me.pieso.jrrogue.entity.Wall;
 import me.pieso.jrrogue.entity.living.Monster;
 import me.pieso.jrrogue.entity.living.Player;
@@ -14,11 +16,16 @@ public class CellularMap extends MapGenerator {
 
     public static final double IALIVE = 0.45;
     public static final int ROUNDS = 7;
+    public static final int EACH = 1;
     private boolean[][] cells;
+    private final int cwidth;
+    private final int cheight;
 
     public CellularMap(int width, int height, Player player) {
         super(width, height, player);
-        this.cells = new boolean[height][width];
+        this.cwidth = width / EACH;
+        this.cheight = height / EACH;
+        this.cells = new boolean[cheight][cwidth];
     }
 
     private void set(boolean[][] cc, int x, int y) {
@@ -30,8 +37,8 @@ public class CellularMap extends MapGenerator {
     }
 
     private void init() {
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
+        for (int y = 0; y < cheight; y++) {
+            for (int x = 0; x < cwidth; x++) {
                 if (Math.random() > IALIVE) {
                     set(cells, x, y);
                 } else {
@@ -42,19 +49,32 @@ public class CellularMap extends MapGenerator {
     }
 
     private void realize() {
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (cells[y][x]) {
-                    data[y][x] = new Floor(x, y);
-                } else {
-                    data[y][x] = new Wall(x, y);
+        for (int y = 0; y < cheight; y++) {
+            for (int x = 0; x < cwidth; x++) {
+                for (int yi = 0; yi < EACH; yi++) {
+                    for (int xi = 0; xi < EACH; xi++) {
+                        if (!cells[y][x]) {
+                            if (xi == 0 || yi == 0 || xi == EACH - 1 || yi == EACH - 1) {
+                                if (Math.random() < 0.1) {
+                                    data[y * EACH + yi][x * EACH + xi] = new Wall(x * EACH + xi, y * EACH + yi);
+                                } else {
+                                    data[y * EACH + yi][x * EACH + xi] = new Leaves(x * EACH + xi, y * EACH + yi);
+                                }
+                            } else {
+                                data[y * EACH + yi][x * EACH + xi] = new Wall(x * EACH + xi, y * EACH + yi);
+                            }
+                        } else {
+                            data[y * EACH + yi][x * EACH + xi] = new Grass(x * EACH + xi, y * EACH + yi);
+                        }
+                    }
                 }
+
             }
         }
     }
 
     private int is(int x, int y) {
-        if (x < 0 || x > width - 1 || y < 0 || y > height - 1) {
+        if (x < 0 || x > cwidth - 1 || y < 0 || y > cheight - 1) {
             return 1;
         }
         return (cells[y][x] == true ? 1 : 0);
@@ -78,9 +98,9 @@ public class CellularMap extends MapGenerator {
     }
 
     private void process() {
-        boolean[][] ncells = new boolean[height][width];
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
+        boolean[][] ncells = new boolean[cheight][cwidth];
+        for (int y = 0; y < cheight; y++) {
+            for (int x = 0; x < cwidth; x++) {
                 int nei = neighbours(x, y);
                 if (nei < 3) {
                     unset(ncells, x, y);

@@ -1,9 +1,13 @@
 package me.pieso.jrrogue.item;
 
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.entity.pickup.SwordPickup;
+import me.pieso.jrrogue.misc.Damage;
 
 public class SwordItem extends Item {
 
@@ -29,28 +33,29 @@ public class SwordItem extends Item {
         updatelook();
     }
 
-    public void updatelook() {
-        Color tint = null;
-        switch (amount()) {
-            case 1:
-                tint = new Color(0.7f, 0.7f, 0.7f);
-                break;
-            case 2:
-                tint = new Color(0.7f, 0f, 0f);
-                break;
-            default:
-                tint = new Color(1f, 1f, 1f);
-                break;
+    public Tier tier() {
+        if (amount() > 0 && amount() - 1 < Tier.tiers.length) {
+            return Tier.tiers[amount() - 1];
         }
-        setImage(ResourceManager.tint(og, tint));
+        return null;
     }
 
-    public int minDmg() {
-        return (int) (amount() * 2);
+    public void updatelook() {
+        setImage(ResourceManager.tint(og, (tier() != null ? tier().col : new Color(0, 0, 0))));
     }
 
-    public int maxDmg() {
-        return (int) (amount() * 3);
+    public Damage getDamage() {
+        return new Damage((tier() != null ? tier().val * 2 : 0), (tier() != null ? tier().val * 3 : 0));
     }
 
+    @Override
+    public void onUse(Game game) {
+
+    }
+
+    @Override
+    public void draw(Graphics g, Rectangle rec) {
+        super.draw(g, rec);
+        g.drawImage(ResourceManager.getImage("sword_overlay"), rec.x, rec.y, rec.width, rec.height, null);
+    }
 }

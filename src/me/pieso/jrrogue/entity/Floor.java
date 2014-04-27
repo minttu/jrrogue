@@ -136,7 +136,7 @@ public class Floor extends Entity {
             ent.draw(g, x, y, side);
         }
         if (routing) {
-            g.setColor(new Color(0f, 1f, 0f, 0.5f));
+            g.setColor(new Color(1f, 1f, 1f, 0.75f));
             g.drawRect(x, y, side - 1, side - 1);
             g.drawRect(x + 2, y + 2, side - 5, side - 5);
         }

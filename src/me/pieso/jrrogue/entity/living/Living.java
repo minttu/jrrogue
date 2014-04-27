@@ -12,14 +12,14 @@ import java.util.Random;
 import me.pieso.jrrogue.core.Game;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.entity.Entity;
+import me.pieso.jrrogue.misc.Damage;
 
 public abstract class Living extends Entity {
 
     private int hp;
     private int maxhp;
 
-    private int mindmg;
-    private int maxdmg;
+    private Damage dmg;
     private double hitrate;
 
     private boolean dead;
@@ -37,8 +37,7 @@ public abstract class Living extends Entity {
         super(image);
         this.hp = hp;
         this.maxhp = hp;
-        this.mindmg = 1;
-        this.maxdmg = 2;
+        this.dmg = new Damage(0, 0);
         this.hitrate = 0.7;
         this.dead = false;
         this.washealed = -1;
@@ -65,7 +64,7 @@ public abstract class Living extends Entity {
     }
 
     public boolean takeDamage(int amount, Living from) {
-        if (!from.living()) {
+        if (from != null && !from.living()) {
             return false;
         }
         if (amount > 0) {
@@ -94,35 +93,24 @@ public abstract class Living extends Entity {
         return hitrate;
     }
 
-    public void setMinDmg(int d) {
-        this.mindmg = d;
-    }
-
-    public int minDmg() {
-        return mindmg;
-    }
-
-    public void setMaxDmg(int d) {
-        this.maxdmg = d;
-    }
-
-    public int maxDmg() {
-        return maxdmg;
+    public void setDmg(Damage dmg) {
+        this.dmg = dmg;
     }
 
     public int toXP() {
-        return (maxhp * maxdmg) / 10;
+        return (int) ((maxhp * dmg.max()) / 10);
+    }
+    
+    public Damage dmg() {
+        return dmg;
     }
 
     public int getDamage() {
-        if (maxdmg < 1) {
+        if (dmg.max() < 1) {
             return 0;
         }
         if (new Random().nextDouble() < hitrate) {
-            if (maxdmg - mindmg > 1) {
-                return new Random().nextInt(maxdmg - mindmg) + mindmg;
-            }
-            return mindmg;
+            return dmg.dmg();
         }
         return 0;
     }
@@ -130,7 +118,7 @@ public abstract class Living extends Entity {
     @Override
     public void draw(Graphics g, int x, int y, int side) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .75f));
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .35f));
         g.drawImage(ResourceManager.getImage("shadow"), x, y, side, side, null);
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
         super.draw(g, x, y, side);

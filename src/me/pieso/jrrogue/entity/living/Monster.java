@@ -3,11 +3,12 @@ package me.pieso.jrrogue.entity.living;
 import java.util.List;
 import java.util.Random;
 import me.pieso.jrrogue.core.Game;
-import me.pieso.jrrogue.util.NeighbourFilter;
-import me.pieso.jrrogue.util.NeighbourIterator;
 import me.pieso.jrrogue.core.ResourceManager;
 import me.pieso.jrrogue.entity.Entity;
 import me.pieso.jrrogue.entity.Floor;
+import me.pieso.jrrogue.misc.Damage;
+import me.pieso.jrrogue.util.NeighbourFilter;
+import me.pieso.jrrogue.util.NeighbourIterator;
 
 class MonsterType {
 
@@ -39,8 +40,7 @@ public class Monster extends Living {
         MonsterType m = types[new Random().nextInt(types.length)];
         setImage(ResourceManager.getImage("monster/" + m.image));
         limit(m.hp);
-        setMinDmg(m.mindmg);
-        setMaxDmg(m.maxdmg);
+        setDmg(new Damage(m.mindmg, m.maxdmg));
         this.name = m.name;
         setSolid(true);
     }

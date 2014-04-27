@@ -17,6 +17,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import me.pieso.jrrogue.core.Game;
+import me.pieso.jrrogue.item.SwordItem;
 
 public class GUI implements Runnable {
 
@@ -68,6 +69,8 @@ public class GUI implements Runnable {
         debug.add(vision);
         final JMenuItem resetvision = new JMenuItem("Reset vision");
         debug.add(resetvision);
+        final JMenuItem givesword = new JMenuItem("Give sword");
+        debug.add(givesword);
 
         newgame.addActionListener(new ActionListener() {
 
@@ -93,6 +96,18 @@ public class GUI implements Runnable {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 game.resetVision();
+                game.calculateVision();
+                game.runHooks();
+            }
+
+        });
+
+        givesword.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                game.getPlayer().inventory().add(new SwordItem());
+                game.calculateVision();
                 game.runHooks();
             }
 

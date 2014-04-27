@@ -7,8 +7,6 @@ public abstract class Pickup extends Living {
 
     public Pickup(BufferedImage image) {
         super(image, 1);
-        setMinDmg(0);
-        setMaxDmg(0);
     }
 
 }

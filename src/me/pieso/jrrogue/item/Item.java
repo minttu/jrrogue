@@ -22,6 +22,7 @@ public abstract class Item {
     private String name;
     private Class link;
     private boolean ready;
+    protected boolean droppable;
 
     public Item(String name, BufferedImage img, int amount) {
         this.name = name;
@@ -30,6 +31,7 @@ public abstract class Item {
         this.showAmount = true;
         this.link = null;
         this.ready = false;
+        this.droppable = true;
     }
 
     public Item(String name, BufferedImage img) {
@@ -60,8 +62,14 @@ public abstract class Item {
         link = null;
     }
 
+    public abstract void onUse(Game game);
+
     public void unloadLinked(Game game) {
         ready = false;
+        if (!droppable) {
+            onUse(game);
+            return;
+        }
         Pickup pick;
         try {
             pick = (Pickup) link.newInstance();
@@ -98,7 +106,7 @@ public abstract class Item {
 
     public void remove(int i) {
         this.amount = Math.max(0, amount - i);
-        if (link != null) {
+        if (link != null || !droppable) {
             ready = true;
         }
     }

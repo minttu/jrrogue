@@ -18,7 +18,7 @@ import me.pieso.jrrogue.item.SwordItem;
 import me.pieso.jrrogue.item.TorchItem;
 
 public class Player extends Living {
-
+    
     private int xp;
     private int maxxp;
     private int level;
@@ -30,10 +30,10 @@ public class Player extends Living {
     private final Inventory inventory;
     private double hunger;
     private int lret;
-
+    
     public Player() {
         super(ResourceManager.getImage("player"), 16);
-
+        
         level = 1;
         xp = 0;
         maxxp = 10;
@@ -44,60 +44,62 @@ public class Player extends Living {
         dungeon = 0;
         hunger = 0;
         lret = 0;
-
+        
         inventory = new Inventory();
         inventory.add(new SwordItem());
         inventory.add(new SwordItem());
         inventory.add(new ArmorItem());
+        inventory.add(new ArmorItem());
+        inventory.add(new RingItem());
         inventory.add(new RingItem());
         inventory.add(new TorchItem(6));
         inventory.add(new GoldItem(0));
         inventory.add(new FoodItem(2));
-
+        
         for (int i = 0; i < 10; i++) {
             status.add("\n");
         }
     }
-
+    
     @Override
     public String name() {
         return "player";
     }
-
+    
     public Inventory inventory() {
         return this.inventory;
     }
-
+    
     public int XP() {
         return xp;
     }
-
+    
     public int maxXP() {
         return maxxp;
     }
-
+    
     public int level() {
         return level;
     }
-
+    
     public double hunger() {
         return hunger;
     }
-
+    
     public void addXP(int amount) {
         xp += amount;
         while (xp >= maxxp) {
             levelUp();
         }
     }
-
+    
     private void levelUp() {
         xp -= maxxp;
         maxxp *= 1.5;
         level++;
         addStatus("You reached level", level + "");
     }
-
+    
     public String toStatus() {
         StringBuilder sb = new StringBuilder();
         for (String s : status) {
@@ -106,7 +108,7 @@ public class Player extends Living {
         lret++;
         return sb.toString();
     }
-
+    
     public void addStatus(boolean dot, String... sss) {
         String ss = lret + "@";
         for (int i = 0; i < sss.length; i++) {
@@ -119,15 +121,15 @@ public class Player extends Living {
             status.remove(0);
         }
     }
-
+    
     public void addStatus(String... sss) {
         addStatus(true, sss);
     }
-
+    
     public int lret() {
         return lret;
     }
-
+    
     @Override
     public void tick(Game game) {
         inventory.checkUnloads(game);
@@ -138,6 +140,10 @@ public class Player extends Living {
         ArmorItem armor = (ArmorItem) inventory.findClass(ArmorItem.class);
         if (sword != null) {
             setMaxHP((int) (oghp() + ((maxxp / 10) * armor.value())));
+        }
+        RingItem ring = (RingItem) inventory.findClass(RingItem.class);
+        if (ring != null) {
+            setHitrate(0.7 + (0.3 / 12) * ring.value());
         }
         if (moves % 40 == 0) {
             heal(maxhp() / 10);
@@ -155,12 +161,12 @@ public class Player extends Living {
         }
         moves++;
     }
-
+    
     @Override
     public void bumpedBy(Entity e) {
-
+        
     }
-
+    
     @Override
     public boolean takeDamage(int amount, Living from) {
         if (from != null && !from.living()) {
@@ -182,7 +188,7 @@ public class Player extends Living {
         }
         return b;
     }
-
+    
     @Override
     public void bumped(Entity e) {
         if (e instanceof Chest) {
@@ -220,39 +226,39 @@ public class Player extends Living {
             }
         }
     }
-
+    
     public void setAscend(boolean bln) {
         ascend = bln;
     }
-
+    
     public boolean shouldAscend() {
         return ascend;
     }
-
+    
     public void setUse(boolean b) {
         use = b;
     }
-
+    
     public boolean use() {
         return use;
     }
-
+    
     public int dungeon() {
         return dungeon;
     }
-
+    
     public void setDungeon(int level) {
         this.dungeon = level;
         addStatus("Welcome to the", level + ".", "dungeon");
     }
-
+    
     public void eat(double d) {
         this.hunger -= d;
         this.hunger = Math.max(0, this.hunger);
     }
-
+    
     public int moves() {
         return moves;
     }
-
+    
 }

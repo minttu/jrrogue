@@ -155,8 +155,8 @@ class GameArea extends JPanel implements GameHook {
             "HP " + player.hp() + "/" + player.maxhp(),
             "(LVL " + player.level() + ") XP " + player.XP() + "/" + player.maxXP(),
             String.format("Fullness %d%%", 100 - (int) (player.hunger() * 100)),
-            "ADPT " + (player.dmg().min() + player.dmg().max()) / 2,
-            "Dungeon " + player.dungeon()
+            "DMG " + (player.dmg().min() + player.dmg().max()) / 2 + "  ACC " + (int) (player.hitrate() * 100) + "%",
+             player.dungeon() + ". dungeon "
         };
         for (int i = 1; i <= msgs.length; i++) {
             Rectangle2D r2d = g.getFontMetrics().getStringBounds(msgs[i - 1], g);

@@ -23,9 +23,11 @@ public class Mouse implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        int x = (e.getX() - ga.offsetX()) / game.getSide();
-        int y = (e.getY() - ga.offsetY()) / game.getSide();
-        game.trypath(x, y);
+        if (e.getButton() == 1) {
+            int x = (e.getX() - ga.offsetX()) / game.getSide();
+            int y = (e.getY() - ga.offsetY()) / game.getSide();
+            game.trypath(x, y);
+        }
     }
 
     @Override

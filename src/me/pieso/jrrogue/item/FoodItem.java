@@ -15,5 +15,6 @@ public class FoodItem extends Item {
     @Override
     public void onUse(Game game) {
         game.getPlayer().eat(0.5);
+        game.getPlayer().addStatus("You are", name());
     }
 }

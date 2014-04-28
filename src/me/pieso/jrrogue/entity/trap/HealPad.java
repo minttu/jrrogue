@@ -32,7 +32,7 @@ public class HealPad extends Trap {
                 Player p = (Player) e;
                 if (p.hp() < p.maxhp()) {
                     p.heal(healpower);
-                    p.addStatus("You were fully by the HealTrap");
+                    p.addStatus("You were fully by the healpad");
                     times--;
                     if (times == 0) {
                         setImage(ResourceManager.getImage("trap"));

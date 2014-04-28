@@ -16,6 +16,6 @@ public class SwordItem extends PassiveItem {
     }
 
     public Damage getDamage() {
-        return new Damage((tier() != null ? tier().val * 2 : 0), (tier() != null ? tier().val * 3 : 0));
+        return new Damage((tier() != null ? tier().val * 1.5 : 0), (tier() != null ? tier().val * 2.25 : 0));
     }
 }

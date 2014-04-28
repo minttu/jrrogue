@@ -30,8 +30,8 @@ class MonsterType {
 public class Monster extends Living {
 
     private static final MonsterType[] types = {
-        new MonsterType("bat", "b", 4, 1, 2),
-        new MonsterType("goblin", "g", 7, 2, 4),
+        new MonsterType("bat", "b", 3, 1, 2),
+        new MonsterType("goblin", "g", 6, 1, 3),
         new MonsterType("mursu", "m", 12, 1, 1)};
     private final String name;
 
